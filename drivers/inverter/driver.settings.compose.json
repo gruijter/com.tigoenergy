@@ -1,0 +1,65 @@
+[
+	{
+		"type": "group",
+		"label": {
+			"en": "Tigo System Information",
+			"nl:": "Tigo Systeem Informatie"
+		},
+		"children": [
+			{
+				"id": "systemId",
+				"type": "label",
+				"label": {
+					"en": "System ID",
+					"nl": "Systeem ID"
+				},
+				"value": ""
+			},
+			{
+				"id": "systemName",
+				"type": "label",
+				"label": {
+					"en": "System name",
+					"nl": "Systeem naam"
+				},
+				"value": ""
+			},
+			{
+				"id": "systemSize",
+				"type": "label",
+				"label": {
+					"en": "System size (WattPeak)",
+					"nl": "Systeem grootte (WattPiek)"
+				},
+				"value": ""
+			}
+		]
+	},
+	{
+		"type": "group",
+		"label": {
+			"en": "Tigo Settings",
+			"nl": "Tigo Instellingen"
+		},
+		"children": [
+			{
+				"id": "username",
+				"type": "text",
+				"label": {
+					"en": "Username",
+					"nl": "Gebruikersnaam"
+				},
+				"value": ""
+			},
+			{
+				"id": "password",
+				"type": "password",
+				"label": {
+					"en": "Password",
+					"nl": "Wachtwoord"
+				},
+				"value": ""
+			}
+		]
+	}
+]

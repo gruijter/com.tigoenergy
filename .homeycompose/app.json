@@ -1,0 +1,53 @@
+{
+  "id": "com.tigoenergy",
+  "version": "1.0.1",
+  "compatibility": ">=12.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local",
+    "cloud"
+  ],
+  "name": {
+    "en": "Tigo"
+  },
+  "description": {
+    "en": "Get the most from your PV installation",
+    "nl": "Haal het maximale uit uw PV-installatie"
+  },
+  "brandColor": "#00573B",
+  "tags": {
+    "en": [
+      "Tigo",
+      "Inverter",
+      "Solar",
+      "Solar panels",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "nl": [
+      "Tigo",
+      "Omvormer",
+      "Zonnepanelen",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ]
+  },
+  "category": [
+    "energy"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "R.M. de Gruijter"
+  },
+  "copyright": "R.M. de Gruijter (rmdegruijter@gmail.com)",
+  "license": "GPL-3.0-or-later",
+  "homeyCommunityTopicId": 135216,
+  "support": "https://github.com/gruijter/com.tigoenergy/issues"
+}

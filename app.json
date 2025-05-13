@@ -1,0 +1,241 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.tigoenergy",
+  "version": "1.0.1",
+  "compatibility": ">=12.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local",
+    "cloud"
+  ],
+  "name": {
+    "en": "Tigo"
+  },
+  "description": {
+    "en": "Get the most from your PV installation",
+    "nl": "Haal het maximale uit uw PV-installatie"
+  },
+  "brandColor": "#00573B",
+  "tags": {
+    "en": [
+      "Tigo",
+      "Inverter",
+      "Solar",
+      "Solar panels",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "nl": [
+      "Tigo",
+      "Omvormer",
+      "Zonnepanelen",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ]
+  },
+  "category": [
+    "energy"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "R.M. de Gruijter"
+  },
+  "copyright": "R.M. de Gruijter (rmdegruijter@gmail.com)",
+  "license": "GPL-3.0-or-later",
+  "homeyCommunityTopicId": 135216,
+  "support": "https://github.com/gruijter/com.tigoenergy/issues",
+  "flow": {
+    "triggers": [
+      {
+        "title": {
+          "en": "New upload interval starts",
+          "nl": "Nieuw upload interval begint"
+        },
+        "highlight": true,
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=uploader"
+          }
+        ],
+        "id": "new_interval"
+      }
+    ],
+    "actions": [
+      {
+        "highlight": true,
+        "title": {
+          "en": "Upload PV data to Tigo.",
+          "nl": "Upload PV data naar Tigo."
+        },
+        "titleFormatted": {
+          "en": "Upload PV data: [[power]]Watt, [[meter]]kWh today until now.",
+          "nl": "Upload PV data: [[power]]Watt, [[meter]]kWh vandaag tot nu."
+        },
+        "hint": {
+          "en": "Upload the current values of the solar panels. You can enter one or both values. Use the special WHEN card to prevent sending too often. Note that the energy (kWh) should contain the daily value.",
+          "nl": "Upload de huidige waarden van de zonnepanelen. Upload niet vaker dan eens per minuut. Je kunt één of beide waarden invullen. Gebruik de speciale ALS kaart om te voorkomenen dat je te vaak stuurt. Let op: de energie (kWh) is moet de dagelijkse waarde bevatten."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=uploader"
+          },
+          {
+            "type": "number",
+            "name": "meter",
+            "title": {
+              "en": "Energy meter",
+              "nl": "Energiemeter"
+            },
+            "placeholder": {
+              "en": "optional",
+              "nl": "optioneel"
+            },
+            "required": false,
+            "value": null
+          },
+          {
+            "type": "number",
+            "name": "power",
+            "title": {
+              "en": "Power",
+              "nl": "Vermogen"
+            },
+            "placeholder": {
+              "en": "mandatory",
+              "nl": "verplicht"
+            },
+            "required": false,
+            "value": null
+          }
+        ],
+        "id": "send_data"
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Solar inverter",
+        "nl": "PV inverter"
+      },
+      "class": "solarpanel",
+      "capabilities": [
+        "meter_power",
+        "measure_power"
+      ],
+      "platforms": [
+        "local",
+        "cloud"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/inverter/assets/images/small.png",
+        "large": "/drivers/inverter/assets/images/large.png",
+        "xlarge": "/drivers/inverter/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../assets/images/small.png",
+            "title": {
+              "en": "Add your Tigo solar system to Homey",
+              "nl": "Voeg je Tigo PV systeem toe aan Homey"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "inverter",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Tigo System Information",
+            "nl:": "Tigo Systeem Informatie"
+          },
+          "children": [
+            {
+              "id": "systemId",
+              "type": "label",
+              "label": {
+                "en": "System ID",
+                "nl": "Systeem ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "systemName",
+              "type": "label",
+              "label": {
+                "en": "System name",
+                "nl": "Systeem naam"
+              },
+              "value": ""
+            },
+            {
+              "id": "systemSize",
+              "type": "label",
+              "label": {
+                "en": "System size (WattPeak)",
+                "nl": "Systeem grootte (WattPiek)"
+              },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Tigo Settings",
+            "nl": "Tigo Instellingen"
+          },
+          "children": [
+            {
+              "id": "username",
+              "type": "text",
+              "label": {
+                "en": "Username",
+                "nl": "Gebruikersnaam"
+              },
+              "value": ""
+            },
+            {
+              "id": "password",
+              "type": "password",
+              "label": {
+                "en": "Password",
+                "nl": "Wachtwoord"
+              },
+              "value": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
