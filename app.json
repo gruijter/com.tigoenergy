@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.tigoenergy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "compatibility": ">=12.0.0",
   "sdk": 3,
   "platforms": [
@@ -51,78 +51,6 @@
   "license": "GPL-3.0-or-later",
   "homeyCommunityTopicId": 135216,
   "support": "https://github.com/gruijter/com.tigoenergy/issues",
-  "flow": {
-    "triggers": [
-      {
-        "title": {
-          "en": "New upload interval starts",
-          "nl": "Nieuw upload interval begint"
-        },
-        "highlight": true,
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=uploader"
-          }
-        ],
-        "id": "new_interval"
-      }
-    ],
-    "actions": [
-      {
-        "highlight": true,
-        "title": {
-          "en": "Upload PV data to Tigo.",
-          "nl": "Upload PV data naar Tigo."
-        },
-        "titleFormatted": {
-          "en": "Upload PV data: [[power]]Watt, [[meter]]kWh today until now.",
-          "nl": "Upload PV data: [[power]]Watt, [[meter]]kWh vandaag tot nu."
-        },
-        "hint": {
-          "en": "Upload the current values of the solar panels. You can enter one or both values. Use the special WHEN card to prevent sending too often. Note that the energy (kWh) should contain the daily value.",
-          "nl": "Upload de huidige waarden van de zonnepanelen. Upload niet vaker dan eens per minuut. Je kunt één of beide waarden invullen. Gebruik de speciale ALS kaart om te voorkomenen dat je te vaak stuurt. Let op: de energie (kWh) is moet de dagelijkse waarde bevatten."
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=uploader"
-          },
-          {
-            "type": "number",
-            "name": "meter",
-            "title": {
-              "en": "Energy meter",
-              "nl": "Energiemeter"
-            },
-            "placeholder": {
-              "en": "optional",
-              "nl": "optioneel"
-            },
-            "required": false,
-            "value": null
-          },
-          {
-            "type": "number",
-            "name": "power",
-            "title": {
-              "en": "Power",
-              "nl": "Vermogen"
-            },
-            "placeholder": {
-              "en": "mandatory",
-              "nl": "verplicht"
-            },
-            "required": false,
-            "value": null
-          }
-        ],
-        "id": "send_data"
-      }
-    ]
-  },
   "drivers": [
     {
       "name": {

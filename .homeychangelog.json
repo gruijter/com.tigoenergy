@@ -4,5 +4,8 @@
   },
   "1.0.1": {
     "en": "Inverter icon updated"
+  },
+  "1.0.2": {
+    "en": "Removed unused flowcards"
   }
 }
