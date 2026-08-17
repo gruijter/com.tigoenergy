@@ -2,3 +2,6 @@ tmp*
 zzz*
 /.vscode/
 roadmap.txt
+.claude
+.github
+AGENTS.md
