@@ -3,7 +3,7 @@
     "notConnected": "Ikke forbundet til Tigo",
     "noSystem": "Intet Tigo-system fundet for denne konto",
     "noData": "Ingen data modtaget fra Tigo",
-    "noUpdates": "Ingen nye data fra Tigo i over en time",
+    "noUpdates": "Ingen nye data fra Tigo i over et døgn",
     "rateLimit": "For mange forespørgsler til Tigo; prøv igen senere",
     "httpFailed": "Forespørgsel til Tigo mislykkedes"
   }

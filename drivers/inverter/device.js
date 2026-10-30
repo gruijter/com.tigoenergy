@@ -28,6 +28,9 @@ const { monotonic, raiseListenerCeiling } = require('../../lib/deviceHelpers');
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
+// Longer than a night: whether Tigo keeps updating while the panels are dark is not verified.
+const NO_UPDATES_AFTER = 24 * 60 * 60 * 1000;
+
 module.exports = class MyDevice extends Homey.Device {
 
   async onInit() {
@@ -129,8 +132,12 @@ module.exports = class MyDevice extends Homey.Device {
   async handleDeviceData(status) {
     // console.dir(status, { depth: null });
     if (!status || !status.summary) throw Error(this.homey.__('errors.noData'));
-    if (!this.lastStatus) this.lastStatus = {};
-    if (status.summary.updated_on === this.lastStatus.updated_on && Date.now() - this.lastPoll > 1000 * 60 * 60) throw Error(this.homey.__('errors.noUpdates'));
+    if (status.summary.updated_on !== this.lastUpdatedOn) {
+      this.lastUpdatedOn = status.summary.updated_on;
+      this.updatedSeenAt = Date.now();
+    } else if (Date.now() - this.updatedSeenAt > NO_UPDATES_AFTER) {
+      throw Error(this.homey.__('errors.noUpdates'));
+    }
     await this.setAvailable().catch((error) => this.error(error));
     this.lastPoll = Date.now();
     this.lastSummary = status.summary;

@@ -159,7 +159,7 @@ class TigoClient {
       this.lastResponse = result.body || result.statusCode;
       const contentType = result.headers['content-type'];
       // find errors
-      if (result['x-rate-limit-remaining'] <= 0) throw Error(this.translate('errors.rateLimit', 'Rate limit exceeded'));
+      if (result.statusCode === 429) throw Error(this.translate('errors.rateLimit', 'Too many requests'));
       if (result.statusCode !== 200) {
         if (result.body && result.body.includes('"message":')) {
           const errorMsg = JSON.parse(result.body);
@@ -167,7 +167,6 @@ class TigoClient {
           if (!msg) msg = errorMsg.messages ? errorMsg.messages[0].message : errorMsg.message;
           throw Error(msg);
         }
-        if (result.statusCode === 429) throw Error(this.translate('errors.rateLimit', 'Too many requests'));
         throw Error(`${this.translate('errors.httpFailed', 'HTTP request failed')}. ${this.lastResponse}`);
       }
       if (!/application\/json/.test(contentType)) {
