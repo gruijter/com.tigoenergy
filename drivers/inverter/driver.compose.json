@@ -8,11 +8,49 @@
     "meter_power",
     "measure_power"
   ],
+  "capabilitiesOptions": {
+    "meter_power": {
+      "title": {
+        "en": "Solar energy (DC)",
+        "nl": "Zonopbrengst (DC)",
+        "da": "Solproduktion (DC)",
+        "de": "Solarertrag (DC)",
+        "es": "Producción solar (CC)",
+        "fr": "Production solaire (CC)",
+        "it": "Produzione solare (CC)",
+        "no": "Solproduksjon (DC)",
+        "sv": "Solproduktion (DC)",
+        "pl": "Uzysk słoneczny (DC)",
+        "ru": "Солнечная энергия (DC)",
+        "ko": "태양광 발전량 (DC)",
+        "ar": "الطاقة الشمسية (DC)"
+      }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Solar power (DC)",
+        "nl": "Zonnevermogen (DC)",
+        "da": "Soleffekt (DC)",
+        "de": "Solarleistung (DC)",
+        "es": "Potencia solar (CC)",
+        "fr": "Puissance solaire (CC)",
+        "it": "Potenza solare (CC)",
+        "no": "Soleffekt (DC)",
+        "sv": "Soleffekt (DC)",
+        "pl": "Moc słoneczna (DC)",
+        "ru": "Солнечная мощность (DC)",
+        "ko": "태양광 전력 (DC)",
+        "ar": "القدرة الشمسية (DC)"
+      }
+    }
+  },
   "platforms": [
     "local",
     "cloud"
   ],
-  "connectivity": ["cloud"],
+  "connectivity": [
+    "cloud"
+  ],
   "images": {
     "small": "{{driverAssetsPath}}/images/small.png",
     "large": "{{driverAssetsPath}}/images/large.png",

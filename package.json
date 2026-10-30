@@ -6,7 +6,8 @@
     "node": ">=12.16.1"
   },
   "scripts": {
-    "lint": "eslint --ext .js,.ts --ignore-path .gitignore ."
+    "lint": "eslint --ext .js,.ts --ignore-path .gitignore .",
+    "test": "node test/solar-titles.js && (test ! -f ../.agents/sync/sync-shared.js || node ../.agents/sync/sync-shared.js check com.tigoenergy)"
   },
   "devDependencies": {
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.11",

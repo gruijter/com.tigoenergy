@@ -22,6 +22,9 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 const Homey = require('homey');
 const util = require('util');
 const TigoClient = require('../../tigo');
+const DeviceMigrator = require('../../lib/DeviceMigrator');
+const { solarTitle } = require('../../lib/solarTitles');
+const { monotonic, raiseListenerCeiling } = require('../../lib/deviceHelpers');
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
@@ -34,6 +37,7 @@ module.exports = class MyDevice extends Homey.Device {
       this.api = new TigoClient({ username, password });
       this.restarting = false;
       this.busy = false;
+      await DeviceMigrator.syncCapabilityOptions(this, this.capabilityOptions());
       await this.startListeners();
       await this.setAvailable();
       await this.doPoll(); // initial poll
@@ -81,8 +85,16 @@ module.exports = class MyDevice extends Homey.Device {
     this.onInit().catch((error) => this.error(error));
   }
 
+  /** Tigo reports DC power and energy only. */
+  capabilityOptions() {
+    return {
+      measure_power: { title: solarTitle('measure_power', 'dc') },
+      meter_power: { title: solarTitle('meter_power', 'dc') },
+    };
+  }
+
   async setCapability(capability, value) {
-    if (this.hasCapability(capability) && value !== undefined) {
+    if (this.hasCapability(capability) && value !== undefined && !Number.isNaN(value)) {
       await this.setCapabilityValue(capability, value).catch((error) => {
         this.log(error, capability, value);
       });
@@ -123,7 +135,12 @@ module.exports = class MyDevice extends Homey.Device {
     this.lastPoll = Date.now();
     this.lastSummary = status.summary;
     this.setCapability('measure_power', Number(status.summary.last_power_dc)).catch((error) => this.error(error));
-    this.setCapability('meter_power', Number(status.summary.lifetime_energy_dc / 1000)).catch((error) => this.error(error));
+    const lifetime = Number(status.summary.lifetime_energy_dc) / 1000;
+    if (lifetime > 0) {
+      monotonic(this, 'meter_power', lifetime)
+        .then((value) => this.setCapability('meter_power', value))
+        .catch((error) => this.error(error));
+    }
     // // set settings that have changed
     // const newSettings = {
     //   systemId,
@@ -141,6 +158,7 @@ module.exports = class MyDevice extends Homey.Device {
     this.eventListenerXminutes = (minute) => {
       this.doPoll().catch((error) => this.error(error));
     };
+    raiseListenerCeiling(this.homey, 'everyXminutes');
     this.homey.on('everyXminutes', this.eventListenerXminutes);
     this.log('listeners registered', this.getName());
   }
