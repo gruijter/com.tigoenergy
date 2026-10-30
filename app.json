@@ -9,11 +9,34 @@
     "cloud"
   ],
   "name": {
-    "en": "Tigo"
+    "en": "Tigo",
+    "nl": "Tigo",
+    "de": "Tigo",
+    "fr": "Tigo",
+    "es": "Tigo",
+    "it": "Tigo",
+    "da": "Tigo",
+    "sv": "Tigo",
+    "no": "Tigo",
+    "pl": "Tigo",
+    "ru": "Tigo",
+    "ar": "Tigo",
+    "ko": "Tigo"
   },
   "description": {
     "en": "Get the most from your PV installation",
-    "nl": "Haal het maximale uit uw PV-installatie"
+    "nl": "Haal het maximale uit uw PV-installatie",
+    "de": "Hol das Beste aus deiner PV-Anlage heraus",
+    "fr": "Tirez le meilleur parti de votre installation photovoltaïque",
+    "es": "Saca el máximo partido a tu instalación fotovoltaica",
+    "it": "Ottieni il massimo dal tuo impianto fotovoltaico",
+    "da": "Få mest muligt ud af dit solcelleanlæg",
+    "sv": "Få ut det mesta av din solcellsanläggning",
+    "no": "Få mest mulig ut av solcelleanlegget ditt",
+    "pl": "Wykorzystaj w pełni swoją instalację fotowoltaiczną",
+    "ru": "Получите максимум от своей солнечной установки",
+    "ar": "احصل على أقصى استفادة من نظامك الكهروضوئي",
+    "ko": "태양광 설비를 최대한 활용하세요"
   },
   "brandColor": "#00573B",
   "tags": {
@@ -29,7 +52,107 @@
     "nl": [
       "Tigo",
       "Omvormer",
+      "Zonne-energie",
       "Zonnepanelen",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "de": [
+      "Tigo",
+      "Wechselrichter",
+      "Solar",
+      "Solarmodule",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "fr": [
+      "Tigo",
+      "Onduleur",
+      "Solaire",
+      "Panneaux solaires",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "es": [
+      "Tigo",
+      "Inversor",
+      "Solar",
+      "Paneles solares",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "it": [
+      "Tigo",
+      "Inverter",
+      "Solare",
+      "Pannelli solari",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "da": [
+      "Tigo",
+      "Inverter",
+      "Sol",
+      "Solceller",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "sv": [
+      "Tigo",
+      "Växelriktare",
+      "Sol",
+      "Solpaneler",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "no": [
+      "Tigo",
+      "Inverter",
+      "Sol",
+      "Solcellepaneler",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "pl": [
+      "Tigo",
+      "Falownik",
+      "Fotowoltaika",
+      "Panele słoneczne",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "ru": [
+      "Tigo",
+      "Инвертор",
+      "Солнечная энергия",
+      "Солнечные панели",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "ar": [
+      "Tigo",
+      "عاكس",
+      "طاقة شمسية",
+      "ألواح شمسية",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "ko": [
+      "Tigo",
+      "인버터",
+      "태양광",
+      "태양광 패널",
       "PV",
       "EI",
       "Energy Intelligence"
@@ -55,7 +178,18 @@
     {
       "name": {
         "en": "Solar inverter",
-        "nl": "PV inverter"
+        "nl": "PV inverter",
+        "de": "Solarwechselrichter",
+        "fr": "Onduleur solaire",
+        "es": "Inversor solar",
+        "it": "Inverter solare",
+        "da": "Solcelleinverter",
+        "sv": "Solväxelriktare",
+        "no": "Solcelleinverter",
+        "pl": "Falownik solarny",
+        "ru": "Солнечный инвертор",
+        "ar": "عاكس شمسي",
+        "ko": "태양광 인버터"
       },
       "class": "solarpanel",
       "capabilities": [
@@ -118,7 +252,18 @@
             "logo": "../assets/images/small.png",
             "title": {
               "en": "Add your Tigo solar system to Homey",
-              "nl": "Voeg je Tigo PV systeem toe aan Homey"
+              "nl": "Voeg je Tigo PV systeem toe aan Homey",
+              "de": "Füge dein Tigo-Solarsystem zu Homey hinzu",
+              "fr": "Ajoutez votre système solaire Tigo à Homey",
+              "es": "Añade tu sistema solar Tigo a Homey",
+              "it": "Aggiungi il tuo impianto solare Tigo a Homey",
+              "da": "Tilføj dit Tigo-solcelleanlæg til Homey",
+              "sv": "Lägg till ditt Tigo-solcellssystem i Homey",
+              "no": "Legg til Tigo-solcelleanlegget ditt i Homey",
+              "pl": "Dodaj swój system solarny Tigo do Homey",
+              "ru": "Добавьте свою солнечную систему Tigo в Homey",
+              "ar": "أضف نظام Tigo الشمسي إلى Homey",
+              "ko": "Tigo 태양광 시스템을 Homey에 추가하세요"
             }
           }
         },
@@ -140,7 +285,18 @@
           "type": "group",
           "label": {
             "en": "Tigo System Information",
-            "nl:": "Tigo Systeem Informatie"
+            "nl": "Tigo Systeem Informatie",
+            "de": "Tigo-Systeminformationen",
+            "fr": "Informations du système Tigo",
+            "es": "Información del sistema Tigo",
+            "it": "Informazioni sul sistema Tigo",
+            "da": "Tigo-systeminformation",
+            "sv": "Tigo-systeminformation",
+            "no": "Tigo-systeminformasjon",
+            "pl": "Informacje o systemie Tigo",
+            "ru": "Информация о системе Tigo",
+            "ar": "معلومات نظام Tigo",
+            "ko": "Tigo 시스템 정보"
           },
           "children": [
             {
@@ -148,7 +304,18 @@
               "type": "label",
               "label": {
                 "en": "System ID",
-                "nl": "Systeem ID"
+                "nl": "Systeem ID",
+                "de": "System-ID",
+                "fr": "ID du système",
+                "es": "ID del sistema",
+                "it": "ID del sistema",
+                "da": "System-ID",
+                "sv": "System-ID",
+                "no": "System-ID",
+                "pl": "ID systemu",
+                "ru": "ID системы",
+                "ar": "معرّف النظام",
+                "ko": "시스템 ID"
               },
               "value": ""
             },
@@ -157,7 +324,18 @@
               "type": "label",
               "label": {
                 "en": "System name",
-                "nl": "Systeem naam"
+                "nl": "Systeem naam",
+                "de": "Systemname",
+                "fr": "Nom du système",
+                "es": "Nombre del sistema",
+                "it": "Nome del sistema",
+                "da": "Systemnavn",
+                "sv": "Systemnamn",
+                "no": "Systemnavn",
+                "pl": "Nazwa systemu",
+                "ru": "Название системы",
+                "ar": "اسم النظام",
+                "ko": "시스템 이름"
               },
               "value": ""
             },
@@ -166,7 +344,18 @@
               "type": "label",
               "label": {
                 "en": "System size (WattPeak)",
-                "nl": "Systeem grootte (WattPiek)"
+                "nl": "Systeem grootte (WattPiek)",
+                "de": "Systemgröße (Wattpeak)",
+                "fr": "Taille du système (Wc)",
+                "es": "Tamaño del sistema (Wp)",
+                "it": "Potenza dell'impianto (Wp)",
+                "da": "Systemstørrelse (Wp)",
+                "sv": "Systemstorlek (Wp)",
+                "no": "Systemstørrelse (Wp)",
+                "pl": "Moc systemu (Wp)",
+                "ru": "Мощность системы (Вт пик)",
+                "ar": "حجم النظام (واط ذروة)",
+                "ko": "시스템 용량 (Wp)"
               },
               "value": ""
             }
@@ -176,7 +365,18 @@
           "type": "group",
           "label": {
             "en": "Tigo Settings",
-            "nl": "Tigo Instellingen"
+            "nl": "Tigo Instellingen",
+            "de": "Tigo-Einstellungen",
+            "fr": "Paramètres Tigo",
+            "es": "Ajustes de Tigo",
+            "it": "Impostazioni Tigo",
+            "da": "Tigo-indstillinger",
+            "sv": "Tigo-inställningar",
+            "no": "Tigo-innstillinger",
+            "pl": "Ustawienia Tigo",
+            "ru": "Настройки Tigo",
+            "ar": "إعدادات Tigo",
+            "ko": "Tigo 설정"
           },
           "children": [
             {
@@ -184,7 +384,18 @@
               "type": "text",
               "label": {
                 "en": "Username",
-                "nl": "Gebruikersnaam"
+                "nl": "Gebruikersnaam",
+                "de": "Benutzername",
+                "fr": "Nom d'utilisateur",
+                "es": "Nombre de usuario",
+                "it": "Nome utente",
+                "da": "Brugernavn",
+                "sv": "Användarnamn",
+                "no": "Brukernavn",
+                "pl": "Nazwa użytkownika",
+                "ru": "Имя пользователя",
+                "ar": "اسم المستخدم",
+                "ko": "사용자 이름"
               },
               "value": ""
             },
@@ -193,7 +404,18 @@
               "type": "password",
               "label": {
                 "en": "Password",
-                "nl": "Wachtwoord"
+                "nl": "Wachtwoord",
+                "de": "Passwort",
+                "fr": "Mot de passe",
+                "es": "Contraseña",
+                "it": "Password",
+                "da": "Adgangskode",
+                "sv": "Lösenord",
+                "no": "Passord",
+                "pl": "Hasło",
+                "ru": "Пароль",
+                "ar": "كلمة المرور",
+                "ko": "비밀번호"
               },
               "value": ""
             }

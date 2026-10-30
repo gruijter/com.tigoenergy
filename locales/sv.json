@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "notConnected": "Inte ansluten till Tigo",
+    "noSystem": "Inget Tigo-system hittades för det här kontot",
+    "noData": "Inga data mottagna från Tigo",
+    "noUpdates": "Inga nya data från Tigo på över en timme",
+    "rateLimit": "För många förfrågningar till Tigo; försök igen senare",
+    "httpFailed": "Förfrågan till Tigo misslyckades"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "notConnected": "Non connecté à Tigo",
+    "noSystem": "Aucun système Tigo trouvé pour ce compte",
+    "noData": "Aucune donnée reçue de Tigo",
+    "noUpdates": "Aucune nouvelle donnée de Tigo depuis plus d'une heure",
+    "rateLimit": "Trop de requêtes vers Tigo ; réessayez plus tard",
+    "httpFailed": "La requête vers Tigo a échoué"
+  }
+}

@@ -3,7 +3,18 @@
 		"type": "group",
 		"label": {
 			"en": "Tigo System Information",
-			"nl:": "Tigo Systeem Informatie"
+			"nl": "Tigo Systeem Informatie",
+			"de": "Tigo-Systeminformationen",
+			"fr": "Informations du système Tigo",
+			"es": "Información del sistema Tigo",
+			"it": "Informazioni sul sistema Tigo",
+			"da": "Tigo-systeminformation",
+			"sv": "Tigo-systeminformation",
+			"no": "Tigo-systeminformasjon",
+			"pl": "Informacje o systemie Tigo",
+			"ru": "Информация о системе Tigo",
+			"ar": "معلومات نظام Tigo",
+			"ko": "Tigo 시스템 정보"
 		},
 		"children": [
 			{
@@ -11,7 +22,18 @@
 				"type": "label",
 				"label": {
 					"en": "System ID",
-					"nl": "Systeem ID"
+					"nl": "Systeem ID",
+					"de": "System-ID",
+					"fr": "ID du système",
+					"es": "ID del sistema",
+					"it": "ID del sistema",
+					"da": "System-ID",
+					"sv": "System-ID",
+					"no": "System-ID",
+					"pl": "ID systemu",
+					"ru": "ID системы",
+					"ar": "معرّف النظام",
+					"ko": "시스템 ID"
 				},
 				"value": ""
 			},
@@ -20,7 +42,18 @@
 				"type": "label",
 				"label": {
 					"en": "System name",
-					"nl": "Systeem naam"
+					"nl": "Systeem naam",
+					"de": "Systemname",
+					"fr": "Nom du système",
+					"es": "Nombre del sistema",
+					"it": "Nome del sistema",
+					"da": "Systemnavn",
+					"sv": "Systemnamn",
+					"no": "Systemnavn",
+					"pl": "Nazwa systemu",
+					"ru": "Название системы",
+					"ar": "اسم النظام",
+					"ko": "시스템 이름"
 				},
 				"value": ""
 			},
@@ -29,7 +62,18 @@
 				"type": "label",
 				"label": {
 					"en": "System size (WattPeak)",
-					"nl": "Systeem grootte (WattPiek)"
+					"nl": "Systeem grootte (WattPiek)",
+					"de": "Systemgröße (Wattpeak)",
+					"fr": "Taille du système (Wc)",
+					"es": "Tamaño del sistema (Wp)",
+					"it": "Potenza dell'impianto (Wp)",
+					"da": "Systemstørrelse (Wp)",
+					"sv": "Systemstorlek (Wp)",
+					"no": "Systemstørrelse (Wp)",
+					"pl": "Moc systemu (Wp)",
+					"ru": "Мощность системы (Вт пик)",
+					"ar": "حجم النظام (واط ذروة)",
+					"ko": "시스템 용량 (Wp)"
 				},
 				"value": ""
 			}
@@ -39,7 +83,18 @@
 		"type": "group",
 		"label": {
 			"en": "Tigo Settings",
-			"nl": "Tigo Instellingen"
+			"nl": "Tigo Instellingen",
+			"de": "Tigo-Einstellungen",
+			"fr": "Paramètres Tigo",
+			"es": "Ajustes de Tigo",
+			"it": "Impostazioni Tigo",
+			"da": "Tigo-indstillinger",
+			"sv": "Tigo-inställningar",
+			"no": "Tigo-innstillinger",
+			"pl": "Ustawienia Tigo",
+			"ru": "Настройки Tigo",
+			"ar": "إعدادات Tigo",
+			"ko": "Tigo 설정"
 		},
 		"children": [
 			{
@@ -47,7 +102,18 @@
 				"type": "text",
 				"label": {
 					"en": "Username",
-					"nl": "Gebruikersnaam"
+					"nl": "Gebruikersnaam",
+					"de": "Benutzername",
+					"fr": "Nom d'utilisateur",
+					"es": "Nombre de usuario",
+					"it": "Nome utente",
+					"da": "Brugernavn",
+					"sv": "Användarnamn",
+					"no": "Brukernavn",
+					"pl": "Nazwa użytkownika",
+					"ru": "Имя пользователя",
+					"ar": "اسم المستخدم",
+					"ko": "사용자 이름"
 				},
 				"value": ""
 			},
@@ -56,7 +122,18 @@
 				"type": "password",
 				"label": {
 					"en": "Password",
-					"nl": "Wachtwoord"
+					"nl": "Wachtwoord",
+					"de": "Passwort",
+					"fr": "Mot de passe",
+					"es": "Contraseña",
+					"it": "Password",
+					"da": "Adgangskode",
+					"sv": "Lösenord",
+					"no": "Passord",
+					"pl": "Hasło",
+					"ru": "Пароль",
+					"ar": "كلمة المرور",
+					"ko": "비밀번호"
 				},
 				"value": ""
 			}

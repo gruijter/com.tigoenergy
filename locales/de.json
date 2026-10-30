@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "notConnected": "Nicht mit Tigo verbunden",
+    "noSystem": "Kein Tigo-System für dieses Konto gefunden",
+    "noData": "Keine Daten von Tigo erhalten",
+    "noUpdates": "Seit über einer Stunde keine neuen Daten von Tigo",
+    "rateLimit": "Zu viele Anfragen an Tigo; versuche es später erneut",
+    "httpFailed": "Anfrage an Tigo fehlgeschlagen"
+  }
+}

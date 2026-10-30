@@ -8,11 +8,34 @@
     "cloud"
   ],
   "name": {
-    "en": "Tigo"
+    "en": "Tigo",
+    "nl": "Tigo",
+    "de": "Tigo",
+    "fr": "Tigo",
+    "es": "Tigo",
+    "it": "Tigo",
+    "da": "Tigo",
+    "sv": "Tigo",
+    "no": "Tigo",
+    "pl": "Tigo",
+    "ru": "Tigo",
+    "ar": "Tigo",
+    "ko": "Tigo"
   },
   "description": {
     "en": "Get the most from your PV installation",
-    "nl": "Haal het maximale uit uw PV-installatie"
+    "nl": "Haal het maximale uit uw PV-installatie",
+    "de": "Hol das Beste aus deiner PV-Anlage heraus",
+    "fr": "Tirez le meilleur parti de votre installation photovoltaïque",
+    "es": "Saca el máximo partido a tu instalación fotovoltaica",
+    "it": "Ottieni il massimo dal tuo impianto fotovoltaico",
+    "da": "Få mest muligt ud af dit solcelleanlæg",
+    "sv": "Få ut det mesta av din solcellsanläggning",
+    "no": "Få mest mulig ut av solcelleanlegget ditt",
+    "pl": "Wykorzystaj w pełni swoją instalację fotowoltaiczną",
+    "ru": "Получите максимум от своей солнечной установки",
+    "ar": "احصل على أقصى استفادة من نظامك الكهروضوئي",
+    "ko": "태양광 설비를 최대한 활용하세요"
   },
   "brandColor": "#00573B",
   "tags": {
@@ -28,7 +51,107 @@
     "nl": [
       "Tigo",
       "Omvormer",
+      "Zonne-energie",
       "Zonnepanelen",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "de": [
+      "Tigo",
+      "Wechselrichter",
+      "Solar",
+      "Solarmodule",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "fr": [
+      "Tigo",
+      "Onduleur",
+      "Solaire",
+      "Panneaux solaires",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "es": [
+      "Tigo",
+      "Inversor",
+      "Solar",
+      "Paneles solares",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "it": [
+      "Tigo",
+      "Inverter",
+      "Solare",
+      "Pannelli solari",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "da": [
+      "Tigo",
+      "Inverter",
+      "Sol",
+      "Solceller",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "sv": [
+      "Tigo",
+      "Växelriktare",
+      "Sol",
+      "Solpaneler",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "no": [
+      "Tigo",
+      "Inverter",
+      "Sol",
+      "Solcellepaneler",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "pl": [
+      "Tigo",
+      "Falownik",
+      "Fotowoltaika",
+      "Panele słoneczne",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "ru": [
+      "Tigo",
+      "Инвертор",
+      "Солнечная энергия",
+      "Солнечные панели",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "ar": [
+      "Tigo",
+      "عاكس",
+      "طاقة شمسية",
+      "ألواح شمسية",
+      "PV",
+      "EI",
+      "Energy Intelligence"
+    ],
+    "ko": [
+      "Tigo",
+      "인버터",
+      "태양광",
+      "태양광 패널",
       "PV",
       "EI",
       "Energy Intelligence"

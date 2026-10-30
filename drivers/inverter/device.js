@@ -34,7 +34,7 @@ module.exports = class MyDevice extends Homey.Device {
     try {
       this.settings = await this.getSettings();
       const { username, password } = this.settings;
-      this.api = new TigoClient({ username, password });
+      this.api = new TigoClient({ username, password, homey: this.homey });
       this.restarting = false;
       this.busy = false;
       await DeviceMigrator.syncCapabilityOptions(this, this.capabilityOptions());
@@ -115,10 +115,10 @@ module.exports = class MyDevice extends Homey.Device {
 
   async doPoll() {
     try {
-      if (!this.api) throw Error('API not initialized');
+      if (!this.api) throw Error(this.homey.__('errors.notConnected'));
       if (!this.api.bearerToken) await this.api.login();
       const status = await this.api.getStatus({ id: this.settings.systemId });
-      if (!status) throw Error('Status data not found');
+      if (!status) throw Error(this.homey.__('errors.noData'));
       await this.handleDeviceData(status);
     } catch (error) {
       this.error(error);
@@ -128,9 +128,9 @@ module.exports = class MyDevice extends Homey.Device {
 
   async handleDeviceData(status) {
     // console.dir(status, { depth: null });
-    if (!status || !status.summary) throw Error('Status data not found');
+    if (!status || !status.summary) throw Error(this.homey.__('errors.noData'));
     if (!this.lastStatus) this.lastStatus = {};
-    if (status.summary.updated_on === this.lastStatus.updated_on && Date.now() - this.lastPoll > 1000 * 60 * 60) throw Error('No updates');
+    if (status.summary.updated_on === this.lastStatus.updated_on && Date.now() - this.lastPoll > 1000 * 60 * 60) throw Error(this.homey.__('errors.noUpdates'));
     await this.setAvailable().catch((error) => this.error(error));
     this.lastPoll = Date.now();
     this.lastSummary = status.summary;

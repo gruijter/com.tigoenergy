@@ -37,7 +37,7 @@ module.exports = class MyDriver extends Homey.Driver {
       username = data.username;
       password = data.password;
       try {
-        this.api = new TigoClient({ username, password });
+        this.api = new TigoClient({ username, password, homey: this.homey });
         await this.api.login();
         info = await this.api.getSystems();
         return Promise.resolve(info);
@@ -48,7 +48,7 @@ module.exports = class MyDriver extends Homey.Driver {
     });
 
     session.setHandler('list_devices', async () => {
-      if (!info || !info.systems) throw Error('No system registered');
+      if (!info || !info.systems) throw Error(this.homey.__('errors.noSystem'));
       const { systems } = info;
       const devices = systems.map((system) => {
         return {
