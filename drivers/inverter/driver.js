@@ -56,10 +56,7 @@ module.exports = class MyDriver extends Homey.Driver {
           data: {
             id: system.system_id,
           },
-          capabilities: [
-            'meter_power',
-            'measure_power',
-          ],
+          capabilities: [...this.manifest.capabilities],
           settings: {
             username,
             password,

@@ -17,7 +17,9 @@
   "class": "solarpanel",
   "capabilities": [
     "meter_power",
-    "measure_power"
+    "measure_power",
+    "meter_power.today",
+    "alarm_problem"
   ],
   "capabilitiesOptions": {
     "meter_power": {
@@ -52,6 +54,23 @@
         "ru": "Солнечная мощность (DC)",
         "ko": "태양광 전력 (DC)",
         "ar": "القدرة الشمسية (DC)"
+      }
+    },
+    "meter_power.today": {
+      "title": {
+        "en": "Solar energy today (DC)",
+        "nl": "Opbrengst vandaag (DC)",
+        "da": "Produktion i dag (DC)",
+        "de": "Solarertrag heute (DC)",
+        "es": "Producción de hoy (CC)",
+        "fr": "Production du jour (CC)",
+        "it": "Produzione di oggi (CC)",
+        "no": "Produksjon i dag (DC)",
+        "sv": "Solproduktion idag (DC)",
+        "pl": "Uzysk dzisiaj (DC)",
+        "ru": "Энергия сегодня (DC)",
+        "ko": "오늘 태양광 발전량 (DC)",
+        "ar": "الطاقة اليوم (DC)"
       }
     }
   },

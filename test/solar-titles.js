@@ -5,7 +5,7 @@ const { solarTitle } = require('../lib/solarTitles');
 const manifest = require('../drivers/inverter/driver.compose.json');
 
 // Manifest titles cannot require solarTitles.js; the device sets the same ones on paired devices.
-for (const cap of ['measure_power', 'meter_power']) {
+for (const cap of ['measure_power', 'meter_power', 'meter_power.today']) {
   assert.deepStrictEqual(manifest.capabilitiesOptions[cap].title, solarTitle(cap, 'dc'), `${cap} title`);
 }
 console.log('solar titles: ok');

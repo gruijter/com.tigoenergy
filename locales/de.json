@@ -6,5 +6,6 @@
     "noUpdates": "Seit über einem Tag keine neuen Daten von Tigo",
     "rateLimit": "Zu viele Anfragen an Tigo; versuche es später erneut",
     "httpFailed": "Anfrage an Tigo fehlgeschlagen"
-  }
+  },
+  "migrating": "Fähigkeiten werden aktualisiert…"
 }

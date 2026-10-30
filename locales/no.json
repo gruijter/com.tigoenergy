@@ -6,5 +6,6 @@
     "noUpdates": "Ingen nye data fra Tigo på over et døgn",
     "rateLimit": "For mange forespørsler til Tigo; prøv igjen senere",
     "httpFailed": "Forespørsel til Tigo mislyktes"
-  }
+  },
+  "migrating": "Oppdaterer funksjoner…"
 }

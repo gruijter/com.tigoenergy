@@ -30,6 +30,8 @@ const setTimeoutPromise = util.promisify(setTimeout);
 
 // Longer than a night: whether Tigo keeps updating while the panels are dark is not verified.
 const NO_UPDATES_AFTER = 24 * 60 * 60 * 1000;
+// The alerts come with the systems list, a second request; the poll runs every minute.
+const ALERTS_INTERVAL = 15 * 60 * 1000;
 
 module.exports = class MyDevice extends Homey.Device {
 
@@ -40,7 +42,9 @@ module.exports = class MyDevice extends Homey.Device {
       this.api = new TigoClient({ username, password, homey: this.homey });
       this.restarting = false;
       this.busy = false;
-      await DeviceMigrator.syncCapabilityOptions(this, this.capabilityOptions());
+      const changed = await DeviceMigrator.migrateCapabilities(this, this.driver.manifest.capabilities);
+      // a re-added capability is back on the manifest's options
+      await DeviceMigrator.syncCapabilityOptions(this, this.capabilityOptions(), { force: changed });
       await this.startListeners();
       await this.setAvailable();
       await this.doPoll(); // initial poll
@@ -93,6 +97,7 @@ module.exports = class MyDevice extends Homey.Device {
     return {
       measure_power: { title: solarTitle('measure_power', 'dc') },
       meter_power: { title: solarTitle('meter_power', 'dc') },
+      'meter_power.today': { title: solarTitle('meter_power.today', 'dc') },
     };
   }
 
@@ -123,6 +128,8 @@ module.exports = class MyDevice extends Homey.Device {
       const status = await this.api.getStatus({ id: this.settings.systemId });
       if (!status) throw Error(this.homey.__('errors.noData'));
       await this.handleDeviceData(status);
+      // a failed alerts check leaves the device available
+      await this.updateAlerts().catch((error) => this.error(error));
     } catch (error) {
       this.error(error);
       this.setUnavailable(error).catch((error) => this.error(error));
@@ -148,6 +155,7 @@ module.exports = class MyDevice extends Homey.Device {
         .then((value) => this.setCapability('meter_power', value))
         .catch((error) => this.error(error));
     }
+    this.setCapability('meter_power.today', Number(status.summary.daily_energy_dc) / 1000).catch((error) => this.error(error));
     // // set settings that have changed
     // const newSettings = {
     //   systemId,
@@ -157,6 +165,15 @@ module.exports = class MyDevice extends Homey.Device {
     //   interval,
     // };
     // for (const [key, value] of Object.entries(newSettings)) this.setSetting(key, value);
+  }
+
+  /** alarm_problem from the system's recent_alerts_count; what Tigo counts as recent is not verified. */
+  async updateAlerts() {
+    if (!this.hasCapability('alarm_problem') || Date.now() - (this.alertsCheckedAt || 0) < ALERTS_INTERVAL) return;
+    this.alertsCheckedAt = Date.now();
+    const { systems } = await this.api.getSystems();
+    const system = (systems || []).find((item) => String(item.system_id) === String(this.settings.systemId));
+    if (system && typeof system.recent_alerts_count === 'number') await this.setCapability('alarm_problem', system.recent_alerts_count > 0);
   }
 
   async startListeners() {
