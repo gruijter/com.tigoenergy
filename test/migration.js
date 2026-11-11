@@ -32,7 +32,12 @@ const fakeDevice = (caps) => {
   // paired before: the new capabilities are appended, nothing is removed
   const old = fakeDevice(['meter_power', 'measure_power']);
   assert.strictEqual(await DeviceMigrator.migrateCapabilities(old, manifest.capabilities, { settleMs: 0 }), true);
-  assert.deepStrictEqual(old.calls, ['+meter_power.today', '+alarm_problem']);
+  assert.deepStrictEqual(old.calls, ['+meter_power.today', '+alarm_problem', '+alarm_connectivity']);
+
+  // paired with 1.0.x: only alarm_connectivity is appended
+  const recent = fakeDevice(['meter_power', 'measure_power', 'meter_power.today', 'alarm_problem']);
+  assert.strictEqual(await DeviceMigrator.migrateCapabilities(recent, manifest.capabilities, { settleMs: 0 }), true);
+  assert.deepStrictEqual(recent.calls, ['+alarm_connectivity']);
 
   // newly paired (driver.js passes the manifest list): no migration
   const fresh = fakeDevice([...manifest.capabilities]);

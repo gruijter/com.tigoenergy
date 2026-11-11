@@ -196,7 +196,8 @@
         "meter_power",
         "measure_power",
         "meter_power.today",
-        "alarm_problem"
+        "alarm_problem",
+        "alarm_connectivity"
       ],
       "capabilitiesOptions": {
         "meter_power": {
@@ -296,6 +297,30 @@
         {
           "id": "add_devices",
           "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../assets/images/small.png",
+            "title": {
+              "en": "Enter your Tigo login",
+              "nl": "Vul je Tigo-login in",
+              "de": "Gib deine Tigo-Anmeldedaten ein",
+              "fr": "Saisissez vos identifiants Tigo",
+              "es": "Introduce tus datos de acceso de Tigo",
+              "it": "Inserisci le tue credenziali Tigo",
+              "da": "Indtast dit Tigo-login",
+              "sv": "Ange din Tigo-inloggning",
+              "no": "Skriv inn Tigo-påloggingen din",
+              "pl": "Wpisz swoje dane logowania Tigo",
+              "ru": "Введите данные для входа в Tigo",
+              "ar": "أدخل بيانات تسجيل الدخول إلى Tigo",
+              "ko": "Tigo 로그인 정보를 입력하세요"
+            }
+          }
         }
       ],
       "id": "inverter",

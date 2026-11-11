@@ -46,8 +46,11 @@ node test/from-logs.js report.txt --site my-house  # choose the site folder
 | File | What it protects |
 | --- | --- |
 | `mapping.js` | `data/summary` to `measure_power`, `meter_power.today` and `meter_power` (Wh to kWh), a missing summary as an error, the lifetime counter held on one lower reading, `alarm_problem` from `recent_alerts_count`. |
-| `pairing.js` | Login (Basic, then Bearer), one device per system with its name, id, settings and the manifest capabilities; no systems gives `errors.noSystem`. |
-| `client.js` | Token handling and the error bodies seen live: 402 "Premium required", the 402 of the data endpoints, 401, 429, and a non-JSON answer. |
+| `pairing.js` | Login (Basic, then Bearer), one device per system with its name, id, settings and the manifest capabilities, no migration at the first start; no systems gives `errors.noSystem`. |
+| `client.js` | Token handling and the error bodies seen live: 402 "Premium required", the 402 of the data endpoints, 401, 429, and a non-JSON answer. A 429 starts a cooldown (Retry-After, else 5 min) in which nothing is sent; a 401 logs in again and retries once. |
+| `device.js` | `alarm_connectivity` after 24 h without new data (power cleared, device stays available), polling every 10 min after 30 min without new data, a 429 leaving the device available, `onUninit` storing the held-back lifetime reading. |
+| `repair.js` | A new login is stored and restarts the device; a login without the system is refused and changes nothing. |
+| `locales.js` | All 13 languages in every compose translation object, the same keys in every `locales/*.json`, a README per language. |
 | `capture.js` | Arm/claim, the client recording every endpoint but never the login, round trip through a timestamped report, truncation reported, redaction of address, coordinates and contacts. |
 
 ## Adding a case

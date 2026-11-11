@@ -74,4 +74,29 @@ module.exports = class MyDriver extends Homey.Driver {
     });
   }
 
+  /** New login for a paired system, without pairing again. */
+  async onRepair(session, device) {
+    session.setHandler('login', async ({ username, password }) => {
+      try {
+        capture.arm('repair', { force: true });
+        const api = new TigoClient({
+          username, password, homey: this.homey, log: (...args) => this.log(...args),
+        });
+        await api.login();
+        const { systems } = await api.getSystems();
+        const { systemId } = device.getSettings();
+        if (!(systems || []).some((system) => String(system.system_id) === String(systemId))) {
+          throw Error(this.homey.__('errors.systemNotOnAccount'));
+        }
+        this.log(`Repair: new login for ${device.getName()}`);
+        await device.setSettings({ username, password });
+        device.restartDevice(1000).catch((error) => this.error(error));
+        return true;
+      } catch (error) {
+        this.error(error);
+        throw error;
+      }
+    });
+  }
+
 };

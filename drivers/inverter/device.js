@@ -25,12 +25,15 @@ const TigoClient = require('../../tigo');
 const capture = require('../../lib/tigoCapture');
 const DeviceMigrator = require('../../lib/DeviceMigrator');
 const { solarTitle } = require('../../lib/solarTitles');
-const { monotonic, raiseListenerCeiling } = require('../../lib/deviceHelpers');
+const { monotonic, raiseListenerCeiling, saveCounters } = require('../../lib/deviceHelpers');
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
 // Longer than a night: whether Tigo keeps updating while the panels are dark is not verified.
-const NO_UPDATES_AFTER = 24 * 60 * 60 * 1000;
+const CONNECTION_LOST_AFTER = 24 * 60 * 60 * 1000;
+// Without new data (night, or a gateway offline) poll every 10 minutes instead of every minute.
+const IDLE_AFTER = 30 * 60 * 1000;
+const IDLE_INTERVAL = 10 * 60 * 1000;
 // The alerts come with the systems list, a second request; the poll runs every minute.
 const ALERTS_INTERVAL = 15 * 60 * 1000;
 
@@ -64,6 +67,7 @@ module.exports = class MyDevice extends Homey.Device {
   async onUninit() {
     this.log('unInit', this.getName());
     this.unregisterListeners();
+    await saveCounters(this);
   }
 
   async onAdded() {
@@ -125,9 +129,17 @@ module.exports = class MyDevice extends Homey.Device {
   //   }
   // }
 
+  /** No new data for IDLE_AFTER: only every IDLE_INTERVAL. */
+  pollDue(now = Date.now()) {
+    if (!this.updatedSeenAt || now - this.updatedSeenAt < IDLE_AFTER) return true;
+    return now - (this.lastRequestAt || 0) >= IDLE_INTERVAL;
+  }
+
   async doPoll() {
     try {
       if (!this.api) throw Error(this.homey.__('errors.notConnected'));
+      if (!this.pollDue()) return;
+      this.lastRequestAt = Date.now();
       if (!this.api.bearerToken) await this.api.login();
       const status = await this.api.getStatus({ id: this.settings.systemId });
       if (!status) throw Error(this.homey.__('errors.noData'));
@@ -136,6 +148,8 @@ module.exports = class MyDevice extends Homey.Device {
       await this.updateAlerts().catch((error) => this.error(error));
     } catch (error) {
       this.error(error);
+      // a rate-limit cooldown passes by itself; the last values stay
+      if (error.statusCode === 429) return;
       this.setUnavailable(error).catch((error) => this.error(error));
     }
   }
@@ -146,13 +160,19 @@ module.exports = class MyDevice extends Homey.Device {
     if (status.summary.updated_on !== this.lastUpdatedOn) {
       this.lastUpdatedOn = status.summary.updated_on;
       this.updatedSeenAt = Date.now();
-    } else if (Date.now() - this.updatedSeenAt > NO_UPDATES_AFTER) {
-      throw Error(this.homey.__('errors.noUpdates'));
+    }
+    const connectionLost = Date.now() - this.updatedSeenAt > CONNECTION_LOST_AFTER;
+    if (connectionLost !== !!this.connectionLost) {
+      this.connectionLost = connectionLost;
+      this.log(connectionLost ? `No new data for ${this.getName()} for 24 hours: connection alarm` : `${this.getName()} has new data again`);
     }
     await this.setAvailable().catch((error) => this.error(error));
     this.lastPoll = Date.now();
     this.lastSummary = status.summary;
-    this.setCapability('measure_power', Number(status.summary.last_power_dc)).catch((error) => this.error(error));
+    await this.setCapability('alarm_connectivity', connectionLost);
+    // a day-old power reading is not the current one
+    if (connectionLost) await this.setCapabilityValue('measure_power', null).catch((error) => this.error(error));
+    else this.setCapability('measure_power', Number(status.summary.last_power_dc)).catch((error) => this.error(error));
     const lifetime = Number(status.summary.lifetime_energy_dc) / 1000;
     if (lifetime > 0) {
       monotonic(this, 'meter_power', lifetime)

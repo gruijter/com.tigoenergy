@@ -28,6 +28,21 @@ module.exports = async (t) => {
     t.eq(JSON.stringify(device.capabilities), JSON.stringify(driver.manifest.capabilities), `device ${i} is paired with the manifest capabilities`);
   });
 
+  // a new device starts with its final capabilities: no migration right after pairing
+  const DeviceMigrator = fixtures.app('lib/DeviceMigrator.js');
+  const caps = [...devices[0].capabilities];
+  const changes = [];
+  const paired = fixtures.makeDevice({ capabilities: caps });
+  Object.assign(paired, {
+    getCapabilities: () => [...caps],
+    getAvailable: () => true,
+    addCapability: async (cap) => changes.push(`+${cap}`),
+    removeCapability: async (cap) => changes.push(`-${cap}`),
+    homey: { __: (key) => key, setTimeout },
+  });
+  await DeviceMigrator.migrateCapabilities(paired, driver.manifest.capabilities);
+  t.eq(changes.join(), '', 'the first start after pairing migrates nothing');
+
   // no systems: a clear error
   fixtures.routeHttps({ '/api/v3/systems': { premium: true } });
   const empty = fixtures.makeSession();

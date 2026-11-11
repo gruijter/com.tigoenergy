@@ -3,9 +3,9 @@
     "notConnected": "Ikke koblet til Tigo",
     "noSystem": "Fant ikke noe Tigo-system for denne kontoen",
     "noData": "Ingen data mottatt fra Tigo",
-    "noUpdates": "Ingen nye data fra Tigo på over et døgn",
     "rateLimit": "For mange forespørsler til Tigo; prøv igjen senere",
-    "httpFailed": "Forespørsel til Tigo mislyktes"
+    "httpFailed": "Forespørsel til Tigo mislyktes",
+    "systemNotOnAccount": "Dette Tigo-anlegget er ikke på den kontoen"
   },
   "migrating": "Oppdaterer funksjoner…"
 }

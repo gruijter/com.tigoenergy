@@ -3,9 +3,9 @@
     "notConnected": "Niet verbonden met Tigo",
     "noSystem": "Geen Tigo-systeem gevonden voor dit account",
     "noData": "Geen gegevens ontvangen van Tigo",
-    "noUpdates": "Al meer dan een dag geen nieuwe gegevens van Tigo",
     "rateLimit": "Te veel verzoeken aan Tigo; probeer het later opnieuw",
-    "httpFailed": "Verzoek aan Tigo mislukt"
+    "httpFailed": "Verzoek aan Tigo mislukt",
+    "systemNotOnAccount": "Dit Tigo-systeem staat niet op dat account"
   },
   "migrating": "Capabilities bijwerken…"
 }
