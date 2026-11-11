@@ -21,6 +21,7 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 
 const Homey = require('homey');
 const TigoClient = require('../../tigo');
+const capture = require('../../lib/tigoCapture');
 
 module.exports = class MyDriver extends Homey.Driver {
 
@@ -37,7 +38,10 @@ module.exports = class MyDriver extends Homey.Driver {
       username = data.username;
       password = data.password;
       try {
-        this.api = new TigoClient({ username, password, homey: this.homey });
+        capture.arm('pairing', { force: true });
+        this.api = new TigoClient({
+          username, password, homey: this.homey, log: (...args) => this.log(...args),
+        });
         await this.api.login();
         info = await this.api.getSystems();
         return Promise.resolve(info);
@@ -52,7 +56,7 @@ module.exports = class MyDriver extends Homey.Driver {
       const { systems } = info;
       const devices = systems.map((system) => {
         return {
-          name: system.system_name,
+          name: system.name,
           data: {
             id: system.system_id,
           },

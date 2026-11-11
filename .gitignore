@@ -8,3 +8,5 @@ zzz*
 .github/
 AGENTS.md
 /node_modules/
+/test/captures/*
+!/test/captures/README.md

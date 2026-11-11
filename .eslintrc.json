@@ -2,11 +2,12 @@
   "extends": "athom/homey-app",
   "overrides": [
     {
-      "files": [
-        "test/**/*.js"
-      ],
+      "files": ["test/**/*.js"],
       "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "no-process-exit": "off",
+        "max-classes-per-file": "off",
+        "homey-app/global-timers": "off"
       }
     }
   ]

@@ -20,10 +20,12 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 'use strict';
 
 const Homey = require('homey');
+const capture = require('./lib/tigoCapture');
 
 module.exports = class MyApp extends Homey.App {
 
   async onInit() {
+    capture.arm('app start', { force: true });
     // start time emitter and flow listeners
     this.everyXminutes(1);
     this.log('Tigo app has been initialized');

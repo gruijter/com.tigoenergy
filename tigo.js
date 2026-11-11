@@ -20,6 +20,7 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 'use strict';
 
 const https = require('https');
+const capture = require('./lib/tigoCapture');
 
 // API host
 const defaultHost = 'api2.tigoenergy.com';
@@ -48,6 +49,7 @@ class TigoClient {
     this.timeout = options.timeout || defaultTimeout;
     this.lastResponse = undefined;
     this.homey = options.homey;
+    this.log = options.log;
   }
 
   /** The locale text of `key`; `fallback` without Homey (plain node). */
@@ -172,8 +174,10 @@ class TigoClient {
       if (!/application\/json/.test(contentType)) {
         throw Error(`Expected JSON but received ${contentType}: ${result.body}`);
       }
-      // console.dir(result.body, { depth: null });
-      return Promise.resolve(JSON.parse(result.body));
+      const payload = JSON.parse(result.body);
+      // logs the raw response only while a capture is armed (lib/tigoCapture.js)
+      capture.record(actionPath, payload, this.log);
+      return Promise.resolve(payload);
     } catch (error) {
       return Promise.reject(error);
     }

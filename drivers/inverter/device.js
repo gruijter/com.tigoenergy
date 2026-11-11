@@ -22,6 +22,7 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 const Homey = require('homey');
 const util = require('util');
 const TigoClient = require('../../tigo');
+const capture = require('../../lib/tigoCapture');
 const DeviceMigrator = require('../../lib/DeviceMigrator');
 const { solarTitle } = require('../../lib/solarTitles');
 const { monotonic, raiseListenerCeiling } = require('../../lib/deviceHelpers');
@@ -39,7 +40,10 @@ module.exports = class MyDevice extends Homey.Device {
     try {
       this.settings = await this.getSettings();
       const { username, password } = this.settings;
-      this.api = new TigoClient({ username, password, homey: this.homey });
+      capture.arm(`device restart: ${this.getName()}`);
+      this.api = new TigoClient({
+        username, password, homey: this.homey, log: (...args) => this.log(...args),
+      });
       this.restarting = false;
       this.busy = false;
       const changed = await DeviceMigrator.migrateCapabilities(this, this.driver.manifest.capabilities);
