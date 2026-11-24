@@ -180,8 +180,8 @@ class TigoClient {
   }
 
   /** Tigo's alerts of a system since `startAdded` (ISO 8601): `{ alerts: [{ alert_id, added, title, message }] }` */
-  async getAlerts({ id, startAdded }) {
-    const query = new URLSearchParams({ system_id: id, start_added: startAdded });
+  async getAlerts({ id, startAdded, limit = 100 }) {
+    const query = new URLSearchParams({ system_id: id, start_added: startAdded, limit });
     return this._makeRequest(`${getAlertsEP}?${query}`);
   }
 

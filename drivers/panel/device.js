@@ -69,7 +69,7 @@ module.exports = class PanelDevice extends Homey.Device {
     }
   }
 
-  /** Capabilities for the API in the store (the app's API has no V, I and RSSI). */
+  /** Capabilities for the API in the store. */
   async applySource() {
     const source = this.getStoreValue('apiSource') || 'v3';
     await DeviceMigrator.migrateCapabilities(this, this.driver.capabilityList(source));

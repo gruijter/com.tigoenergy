@@ -35,6 +35,15 @@ const { totalPerObject, localIso, shiftDay } = require('../../lib/tigoAggregate'
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
+const validZone = (timeZone) => {
+  try {
+    Intl.DateTimeFormat('en', { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 // Longer than a night: whether Tigo keeps updating while the panels are dark is not verified.
 const CONNECTION_LOST_AFTER = 24 * 60 * 60 * 1000;
 // Without new data for IDLE_AFTER (night, or a gateway offline) poll less often. The app's API
@@ -202,6 +211,17 @@ module.exports = class MyDevice extends Homey.Device {
   }
 
   async doPoll() {
+    // a slow poll can last longer than the minute between two
+    if (this.busy) return;
+    this.busy = true;
+    try {
+      await this.poll();
+    } finally {
+      this.busy = false;
+    }
+  }
+
+  async poll() {
     try {
       if (!this.api) throw Error(this.homey.__('errors.notConnected'));
       if (!this.pollDue()) return;
@@ -212,10 +232,14 @@ module.exports = class MyDevice extends Homey.Device {
         if (await this.switchSource('v3')) return;
       }
       if (!this.api.bearerToken) await this.api.login();
-      // first, so the reading already has the check-in and time zone; a failure leaves the device available
+      // the reading first: a rate limit hit by the extra requests does not block it
+      const answer = this.source === 'mobile'
+        ? await this.api.getHomepage({ id: this.apiSystemId })
+        : await this.api.getStatus({ id: this.apiSystemId });
+      // before handling the reading, so it has the check-in and time zone; a failure leaves the device available
       await this.updateStatus().catch((error) => this.error(error));
-      if (this.source === 'mobile') await this.handleReading(fromHomepage(await this.api.getHomepage({ id: this.apiSystemId })));
-      else await this.handleDeviceData(await this.api.getStatus({ id: this.apiSystemId }));
+      if (this.source === 'mobile') await this.handleReading(fromHomepage(answer));
+      else await this.handleDeviceData(answer);
     } catch (error) {
       this.error(`poll on the ${this.source} API failed:`, error.statusCode || '', error.message);
       // a rate-limit cooldown passes by itself; the last values stay
@@ -271,7 +295,7 @@ module.exports = class MyDevice extends Homey.Device {
     return wh / 1000;
   }
 
-  /** @param {object} reading { powerW, todayKwh, lifetimeKwh, updatedAt } (lib/tigoReadings.js) */
+  /** @param {object} reading { powerW, todayKwh, monthKwh, yearKwh, lifetimeKwh, updatedAt } (lib/tigoReadings.js) */
   async handleReading(reading) {
     if (!reading) throw Error(this.homey.__('errors.noData'));
     if (reading.updatedAt !== this.lastUpdatedOn) {
@@ -282,11 +306,13 @@ module.exports = class MyDevice extends Homey.Device {
       this.updatedSeenAt = Number.isFinite(at) && at < Date.now() ? at : Date.now();
     }
     const dataStale = Date.now() - this.updatedSeenAt > CONNECTION_LOST_AFTER;
-    // the official API tells when the Cloud Connect last checked in, also at night
-    const connectionLost = Number.isFinite(this.checkinAt) ? Date.now() - this.checkinAt > CHECKIN_LOST_AFTER : dataStale;
+    // the official API tells when the Cloud Connect last checked in (whether also at night is not verified)
+    const checkinLost = Number.isFinite(this.checkinAt) && Date.now() - this.checkinAt > CHECKIN_LOST_AFTER;
+    const connectionLost = Number.isFinite(this.checkinAt) ? checkinLost : dataStale;
     if (connectionLost !== !!this.connectionLost) {
       this.connectionLost = connectionLost;
-      this.log(connectionLost ? `No new data for ${this.getName()} for 24 hours: connection alarm` : `${this.getName()} has new data again`);
+      const why = checkinLost ? 'no Cloud Connect check-in for 2 hours' : 'no new data for 24 hours';
+      this.log(connectionLost ? `${this.getName()}: ${why}: connection alarm` : `${this.getName()} is connected again`);
     }
     await this.setAvailable().catch((error) => this.error(error));
     this.lastPoll = Date.now();
@@ -313,9 +339,11 @@ module.exports = class MyDevice extends Homey.Device {
       return;
     }
     await this.updateAlerts().catch((error) => this.error('alerts:', error.message));
+    // an old check-in must not raise the alarm while sources/system fails
+    this.checkinAt = undefined;
     const { checkinAt, timeZone } = fromSources(await this.api.getSources({ id: this.apiSystemId }));
     this.checkinAt = checkinAt;
-    if (timeZone) this.timeZone = timeZone;
+    if (timeZone && validZone(timeZone)) this.timeZone = timeZone;
   }
 
   /** alarm_problem from the system's recent_alerts_count (what Tigo counts as recent is not verified), with their titles. */
@@ -326,7 +354,7 @@ module.exports = class MyDevice extends Homey.Device {
     const count = system.recent_alerts_count;
     await this.setCapability('alarm_problem', count > 0);
     const titles = count > 0
-      ? alertTitles(await this.api.getAlerts({ id: this.apiSystemId, startAdded: new Date(Date.now() - ALERTS_SINCE).toISOString() }), count)
+      ? alertTitles(await this.api.getAlerts({ id: this.apiSystemId, startAdded: new Date(Date.now() - ALERTS_SINCE).toISOString(), limit: 100 }), count)
       : null;
     await this.setCapability('active_faults', titles);
   }
@@ -334,11 +362,11 @@ module.exports = class MyDevice extends Homey.Device {
   /** The app's equipment states that are a warning or error now. */
   async updateEquipmentFaults() {
     if (!this.eventTypes || Date.now() - this.eventTypes.at > EVENT_TYPES_TTL) {
-      // titles only: without them the status type is shown
+      // titles only: without them the status type is shown, and they are asked again next time
       const types = await this.api.getEventTypes({ id: this.apiSystemId }).catch(() => null);
-      this.eventTypes = { at: Date.now(), types };
+      if (types) this.eventTypes = { at: Date.now(), types };
     }
-    const faults = equipmentFaults(await this.api.getEquipmentStatus({ id: this.apiSystemId }), this.eventTypes.types);
+    const faults = equipmentFaults(await this.api.getEquipmentStatus({ id: this.apiSystemId }), this.eventTypes && this.eventTypes.types);
     await this.setCapability('alarm_problem', faults !== null);
     await this.setCapability('active_faults', faults);
   }

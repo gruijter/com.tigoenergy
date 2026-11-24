@@ -218,6 +218,7 @@ async function stubs(t) {
   t.eq(panels[0].values.measure_watt_panel, 95, 'and the power still comes');
   await poller.tick(at + 5 * 60 * 1000);
   t.eq(calls.filter((call) => call.path.startsWith('/api/v4/equipments')).length, 1, 'the equipment list is asked once');
+  t.eq(calls.filter((call) => call.path.includes('temp=temp')).length, 1, 'a refused field is not asked again within a day');
   await poller.tick(at + 3 * 60 * 60 * 1000);
   t.eq(panels[0].values.measure_watt_panel, null, 'a value older than an hour clears the power tile');
 

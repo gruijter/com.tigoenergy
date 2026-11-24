@@ -155,13 +155,23 @@ docStubs.combined = { csv: 'DATETIME,1\n2017/01/01 00:00:00.000,1000\n2017/01/02
 // The app's equipment states: shapes from M. Stranik's Tigo app (lib/parse.js there), not seen by us.
 docStubs.mobileEquipmentStatus = [
   {
-    statusTime: '2026-08-28 09:00:00', createdTime: '2026-08-28 07:00:00', statusType: 'lowVoltage', statusCode: 1, equipment: { equipmentType: 'panel', equipmentSerial: 'P1' },
+    equipmentType: 'panel',
+    equipmentSerial: 'P1',
+    equipmentStatusesLatest: [
+      {
+        statusTime: '2026-08-28 09:00:00', createdTime: '2026-08-28 07:00:00', statusType: 'lowVoltage', statusCode: 1,
+      },
+      {
+        statusTime: '2026-08-28 10:00:00', createdTime: '2026-08-28 08:00:00', statusType: 'lowVoltage', statusCode: 0,
+      },
+    ],
   },
   {
-    statusTime: '2026-08-28 10:00:00', createdTime: '2026-08-28 08:00:00', statusType: 'lowVoltage', statusCode: 0, equipment: { equipmentType: 'panel', equipmentSerial: 'P1' },
-  },
-  {
-    statusTime: '2026-08-28 10:05:00', createdTime: '2026-08-28 08:05:00', statusType: 'noCommunication', statusCode: 2, equipment: { equipmentType: 'unit', equipmentSerial: 'CCA-1' },
+    equipmentType: 'unit',
+    equipmentSerial: 'CCA-1',
+    equipmentStatusesLatest: [{
+      statusTime: '2026-08-28 10:05:00', createdTime: '2026-08-28 08:05:00', statusType: 'noCommunication', statusCode: 2,
+    }],
   },
 ];
 docStubs.mobileEventTypes = [{ type: 'noCommunication', title: 'No communication', equipmentType: 'unit' }];
@@ -318,7 +328,7 @@ const MOBILE_ROUTES = {
   '/api/v4/equipments': 'mobileEquipments',
   '/api/v4/system/summary/summary': 'mobilePanelPower',
   '/api/v4/system/summary/aggenergy': 'mobilePanelEnergy',
-  '/api/v4/equipment-status/history': 'mobileEquipmentStatus',
+  '/api/v4/equipment-status/latest': 'mobileEquipmentStatus',
   '/api/v4/equipment-event-types': 'mobileEventTypes',
 };
 

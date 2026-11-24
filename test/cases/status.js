@@ -31,6 +31,8 @@ module.exports = async (t) => {
   };
   t.eq(readings.alertTitles(two, 1), 'String Shutdown', 'the newest of recent_alerts_count alerts, without the prefix');
   t.eq(readings.alertTitles(two, 0), null, 'no recent alert: null');
+  const zones = { alerts: [{ added: '2026-11-01T01:30:00-08:00', title: 'Late' }, { added: '2026-11-01T01:45:00-07:00', title: 'Early' }] };
+  t.eq(readings.alertTitles(zones, 1), 'Late', 'alerts are sorted by time, not by text');
   t.eq(readings.equipmentFaults(fixtures.get('mobileEquipmentStatus'), fixtures.get('mobileEventTypes')), 'No communication', 'a recovered warning is not active, an error is, with its title');
 
   // official API: alerts, active faults, check-in
@@ -44,6 +46,11 @@ module.exports = async (t) => {
   t.eq(device.values.alarm_problem, true, 'recent alerts: alarm_problem');
   t.ok(typeof device.values.active_faults === 'string' && !device.values.active_faults.startsWith('Tigo Alert'), 'and their titles in active_faults');
   t.eq(device.checkinAt, sources.checkinAt, 'the check-in is read');
+  fixtures.routeHttps({ '/api/v3/sources/system': fixtures.errors.rateLimited });
+  device.statusCheckedAt = 0;
+  await device.updateStatus().catch(() => {});
+  t.eq(device.checkinAt, undefined, 'a failing sources/system forgets the old check-in');
+  device.api.rateLimitedUntil = 0;
   fixtures.routeHttps({ '/api/v3/systems': { systems: [{ ...system, recent_alerts_count: 0 }] } });
   device.statusCheckedAt = 0;
   await device.updateStatus();
@@ -101,6 +108,12 @@ module.exports = async (t) => {
   app.api.bearerToken = 'token';
   app.statusCheckedAt = 0;
   app.eventTypes = null;
+  fixtures.routeHttps({ 'mobile:/api/v4/equipment-event-types': () => ({ status: 500, body: { message: 'Server error' } }) });
+  await app.updateStatus();
+  t.eq(app.eventTypes, null, 'failed event types are not kept');
+  t.eq(app.values.active_faults, 'noCommunication', 'and the status type is shown');
+  fixtures.routeHttps();
+  app.statusCheckedAt = 0;
   await app.updateStatus();
   t.eq(app.values.alarm_problem, true, "the app's API: a fault sets alarm_problem");
   t.eq(app.values.active_faults, 'No communication', 'and its title');

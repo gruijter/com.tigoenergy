@@ -209,6 +209,14 @@ module.exports = async (t) => {
   const pairReadings = new Map(duo.map((device, i) => [device, { todayKwh: i + 1 }]));
   await PanelPoller.prototype.compare.call(judge, {}, duo, pairReadings, '2026-11-24');
   t.eq(pairReadings.get(duo[0]).efficiencyPct, null, 'two panels in a string: no efficiency');
+  duo[0].store.underDays = 4;
+  const duoSys = {};
+  await PanelPoller.prototype.compare.call(judge, duoSys, duo, new Map(duo.map((device) => [device, { todayKwh: 1 }])), '2026-11-24');
+  t.eq(duo[0].store.underDays, 4, 'an old underperforming count of a two-panel string is kept until the day changes');
+  const duoNext = new Map(duo.map((device) => [device, { todayKwh: 1 }]));
+  await PanelPoller.prototype.compare.call(judge, duoSys, duo, duoNext, '2026-11-25');
+  t.eq(duoNext.get(duo[0]).underperforming, false, 'and is not shown');
+  t.eq(duo[0].store.underDays, 0, 'a new day resets it');
 
   // a JSON answer to a CSV request is an error, not an empty dataset
   fixtures.routeHttps({ '/api/v3/data/aggregate': () => ({ status: 200, body: { message: 'Invalid range' } }) });
