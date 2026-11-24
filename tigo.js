@@ -22,14 +22,12 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 const https = require('https');
 const capture = require('./lib/tigoCapture');
 
-// API host
 const defaultHost = 'api2.tigoenergy.com';
 const defaultPort = 443;
 const defaultTimeout = 20000;
 // Used when a 429 carries no Retry-After; our own choice.
 const RATE_LIMIT_COOLDOWN = 5 * 60 * 1000;
 
-// Endpoints
 const loginEP = '/api/v3/users/login';
 const logoutEP = '/api/v3/users/logout';
 const getSystemsEP = '/api/v3/systems';
@@ -41,7 +39,6 @@ const getAggregateEP = '/api/v3/data/aggregate';
 const getCombinedEP = '/api/v3/data/combined';
 const getAlertsEP = '/api/v3/alerts/system';
 
-// Represents a session to a Tigo system.
 class TigoClient {
 
   constructor(opts) {
@@ -234,13 +231,9 @@ class TigoClient {
       };
       if (data && data !== '') options.method = 'POST';
       if (method) options.method = method;
-      // console.log(options);
       const result = await this._makeHttpsRequest(options, postData, timeout);
-      // console.dir(result.body, { depth: null });
-      // console.dir(result.headers, { depth: null });
       this.lastResponse = result.body || result.statusCode;
       const contentType = result.headers['content-type'];
-      // find errors
       if (result.statusCode === 429) throw this._error(this.translate('errors.rateLimit', 'Too many requests'), 429, result.headers['retry-after']);
       if (result.statusCode !== 200) {
         capture.recordError(actionPath, result.statusCode, result.body, this.log, this.source);

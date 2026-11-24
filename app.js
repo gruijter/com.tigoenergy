@@ -27,7 +27,6 @@ module.exports = class MyApp extends Homey.App {
 
   async onInit() {
     capture.arm('app start', { force: true });
-    // start time emitter and flow listeners
     this.panelPoller = new PanelPoller({ homey: this.homey, log: (...args) => this.log(...args), error: (...args) => this.error(...args) });
     this.pollPanels = () => {
       this.panelPoller.tick().catch((error) => this.error(error));
@@ -46,7 +45,7 @@ module.exports = class MyApp extends Homey.App {
     let timeoutId;
     const scheduleNextXminutes = () => {
       if (timeoutId) {
-        this.homey.clearTimeout(timeoutId); // Clear any existing timeout
+        this.homey.clearTimeout(timeoutId);
       }
       const now = new Date();
       const nextXminutes = new Date(now);
@@ -54,11 +53,10 @@ module.exports = class MyApp extends Homey.App {
       const nextMultipleOfX = currentMinutes % interval === 0 ? currentMinutes + interval : Math.ceil(currentMinutes / interval) * interval;
       nextXminutes.setMinutes(nextMultipleOfX, 0, 0);
       const timeToNextXminutes = nextXminutes - now;
-      // console.log('everyXminutes starts in', timeToNextXminutes / 1000);
       timeoutId = this.homey.setTimeout(() => {
         const minutes = new Date(Date.now()).getMinutes();
         this.homey.emit('everyXminutes', minutes);
-        scheduleNextXminutes(); // Schedule the next X minutes
+        scheduleNextXminutes();
       }, timeToNextXminutes);
     };
     scheduleNextXminutes();

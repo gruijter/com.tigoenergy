@@ -46,16 +46,13 @@ const validZone = (timeZone) => {
 
 // Longer than a night: whether Tigo keeps updating while the panels are dark is not verified.
 const CONNECTION_LOST_AFTER = 24 * 60 * 60 * 1000;
-// Without new data for IDLE_AFTER (night, or a gateway offline) poll less often. The app's API
-// has 15-minute data (per its third-party client, not verified).
+// The app's API has 15-minute data (per its third-party client, not verified).
 const IDLE_AFTER = 30 * 60 * 1000;
 const CADENCE = {
   v3: { interval: 0, idle: 10 * 60 * 1000 },
   mobile: { interval: 5 * 60 * 1000, idle: 30 * 60 * 1000 },
 };
-// on the app's API, how often to look whether the official API (EI Premium) works again
 const PREMIUM_RECHECK = 24 * 60 * 60 * 1000;
-// Alerts and the Cloud Connect check-in are extra requests; the poll runs every minute.
 const STATUS_INTERVAL = 15 * 60 * 1000;
 // Own choice: how often a Cloud Connect checks in is not verified.
 const CHECKIN_LOST_AFTER = 2 * 60 * 60 * 1000;
@@ -97,7 +94,7 @@ module.exports = class MyDevice extends Homey.Device {
       await DeviceMigrator.syncCapabilityOptions(this, this.capabilityOptions(), { force: changed });
       await this.startListeners();
       await this.setAvailable();
-      await this.doPoll(); // initial poll
+      await this.doPoll();
       this.log(this.getName(), `has been initialized on the ${this.source} API, system ${this.apiSystemId}`);
     } catch (error) {
       this.error(error);
@@ -136,13 +133,11 @@ module.exports = class MyDevice extends Homey.Device {
   }
 
   async restartDevice(delay) {
-    // this.destroyListeners();
     if (this.restarting) return;
     this.restarting = true;
     this.unregisterListeners();
     const dly = delay || 1000 * 5;
     this.log(`Device will restart in ${dly / 1000} seconds`);
-    // this.setUnavailable(this.zigbee2MqttType, 'is restarting');
     await setTimeoutPromise(dly);
     if (this.destroyed) return;
     this.onInit().catch((error) => this.error(error));
@@ -166,18 +161,6 @@ module.exports = class MyDevice extends Homey.Device {
       });
     }
   }
-
-  // setSetting(setting, value) {
-  //   const settings = this.getSettings();
-  //   if (settings && settings[setting] !== value) {
-  //     const newSettings = {};
-  //     newSettings[setting] = value;
-  //     this.log('New setting:', newSettings);
-  //     this.setSettings(newSettings).catch((error) => {
-  //       this.log(error, setting, value);
-  //     });
-  //   }
-  // }
 
   pollDue(now = Date.now()) {
     const cadence = CADENCE[this.source] || CADENCE.v3;
@@ -211,7 +194,6 @@ module.exports = class MyDevice extends Homey.Device {
   }
 
   async doPoll() {
-    // a slow poll can last longer than the minute between two
     if (this.busy) return;
     this.busy = true;
     try {
@@ -236,7 +218,7 @@ module.exports = class MyDevice extends Homey.Device {
       const answer = this.source === 'mobile'
         ? await this.api.getHomepage({ id: this.apiSystemId })
         : await this.api.getStatus({ id: this.apiSystemId });
-      // before handling the reading, so it has the check-in and time zone; a failure leaves the device available
+      // before handling the reading: it needs the check-in and time zone
       await this.updateStatus().catch((error) => this.error(error));
       if (this.source === 'mobile') await this.handleReading(fromHomepage(answer));
       else await this.handleDeviceData(answer);
@@ -317,7 +299,6 @@ module.exports = class MyDevice extends Homey.Device {
     await this.setAvailable().catch((error) => this.error(error));
     this.lastPoll = Date.now();
     await this.setCapability('alarm_connectivity', connectionLost);
-    // a day-old power reading is not the current one
     if (connectionLost || dataStale) await this.setCapabilityValue('measure_power', null).catch((error) => this.error(error));
     else this.setCapability('measure_power', reading.powerW).catch((error) => this.error(error));
     if (reading.lifetimeKwh > 0) {
@@ -362,7 +343,6 @@ module.exports = class MyDevice extends Homey.Device {
   /** The app's equipment states that are a warning or error now. */
   async updateEquipmentFaults() {
     if (!this.eventTypes || Date.now() - this.eventTypes.at > EVENT_TYPES_TTL) {
-      // titles only: without them the status type is shown, and they are asked again next time
       const types = await this.api.getEventTypes({ id: this.apiSystemId }).catch(() => null);
       if (types) this.eventTypes = { at: Date.now(), types };
     }
@@ -373,7 +353,6 @@ module.exports = class MyDevice extends Homey.Device {
 
   async startListeners() {
     this.unregisterListeners();
-    // add listener for X minute trigger
     this.eventListenerXminutes = (minute) => {
       this.doPoll().catch((error) => this.error(error));
     };

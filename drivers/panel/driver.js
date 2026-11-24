@@ -27,7 +27,6 @@ const { panelsOf } = require('../../lib/tigoReadings');
 module.exports = class PanelDriver extends InverterDriver {
 
   async onInit() {
-    // a condition card never runs by itself (skill §17)
     this.homey.flow.getConditionCard('alarm_underperforming_panel_is')
       .registerRunListener(({ device }) => device.getCapabilityValue('alarm_underperforming_panel') === true);
     this.log('Panel driver has been initialized');
