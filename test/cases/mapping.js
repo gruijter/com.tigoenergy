@@ -14,7 +14,7 @@ module.exports = async (t) => {
   }
 
   const device = fixtures.makeDevice();
-  await device.handleDeviceData({ summary });
+  await device.handleDeviceData({ summary: { ...summary, updated_on: new Date().toISOString() } });
   await new Promise((resolve) => {
     setImmediate(resolve);
   });

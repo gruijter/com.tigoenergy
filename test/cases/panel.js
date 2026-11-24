@@ -159,7 +159,7 @@ module.exports = async (t) => {
   quiet.register(dark);
   await quiet.tick();
   t.eq(dark.values.measure_watt_panel, null, 'no minute in the window clears the power tile');
-  t.eq(dark.values.meter_kwh_panel_today, undefined, "and leaves today's energy");
+  t.eq(dark.values.meter_kwh_panel_today, 0, 'no value yet today: 0 kWh, not yesterday');
 
   // errors: 402 (without the Tigo app's API) makes all panels unavailable, 429 keeps them
   fixtures.routeHttps({ '/api/v3/data/aggregate': fixtures.errors.premium, 'mobile:/api/v3/user/login': fixtures.errors.unauthorized });
@@ -188,6 +188,33 @@ module.exports = async (t) => {
   t.eq(watcher.registered, 0, 'only the energy_* toggle changed: nothing happens');
   await panel.onSettings({ changedKeys: ['password'] });
   t.eq(watcher.registered, 1, 'a new password registers with the poller again');
+
+  // one login per system: a new one reaches the other panels of the system, not other systems
+  const pair = [1, 2].map((objectId) => fixtures.makePanel({ objectId, poller: watcher }));
+  const elsewhere = fixtures.makePanel({ objectId: 3, systemId: '2', poller: watcher });
+  const all = [...pair, elsewhere];
+  all.forEach((device) => {
+    device.driver = { getDevices: () => all };
+  });
+  pair[0].settings.password = 'new';
+  pair[0].store.apiSource = 'mobile';
+  await pair[0].restartDevice();
+  t.eq(pair[1].settings.password, 'new', 'repair of one panel gives the others of the system the new password');
+  t.eq(pair[1].store.apiSource, 'mobile', 'and the API');
+  t.eq(elsewhere.settings.password, 'secret', 'a panel of another system keeps its own');
+
+  // a string of one paired panel has nothing to compare with
+  const alone = fixtures.makePanel({ objectId: 9, poller: judge });
+  const single = new Map([[alone, { todayKwh: 2 }]]);
+  await PanelPoller.prototype.compare.call(judge, {}, [alone], single, '2026-11-24');
+  t.eq(single.get(alone).efficiencyPct, null, 'one panel in a string: no efficiency');
+
+  // a JSON answer to a CSV request is an error, not an empty dataset
+  fixtures.routeHttps({ '/api/v3/data/aggregate': () => ({ status: 200, body: { message: 'Invalid range' } }) });
+  const jsonClient = fixtures.makeClient();
+  jsonClient.bearerToken = 'token';
+  const jsonError = await jsonClient.getAggregate({ id: 1, start: 'a', end: 'b' }).catch((error) => error);
+  t.eq(jsonError && jsonError.message, 'Invalid range', 'JSON instead of CSV throws with its message');
 
   // capture: minutes and days are two captures, CSV wrapped in JSON
   const capture = fixtures.app('lib/tigoCapture.js');

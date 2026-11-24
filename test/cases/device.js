@@ -11,8 +11,8 @@ const tick = () => new Promise((resolve) => {
 });
 
 module.exports = async (t) => {
-  const { summary } = fixtures.get('summary');
   const HOUR = 60 * 60 * 1000;
+  const summary = { ...fixtures.get('summary').summary, updated_on: new Date().toISOString() };
 
   // connection alarm after 24 h without a new updated_on; power cleared, device stays available
   const device = fixtures.makeDevice();
@@ -30,6 +30,10 @@ module.exports = async (t) => {
   await tick();
   t.eq(device.values.alarm_connectivity, false, 'new data clears the alarm');
   t.eq(device.values.measure_power, 800, 'and shows the power again');
+  const restarted = fixtures.makeDevice();
+  await restarted.handleDeviceData({ summary: { ...summary, updated_on: new Date(Date.now() - 25 * HOUR).toISOString() } });
+  await tick();
+  t.eq(restarted.values.alarm_connectivity, true, 'after an app start, a day-old updated_on sets the alarm at once');
 
   // idle cadence
   const now = Date.now();

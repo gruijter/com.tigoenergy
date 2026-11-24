@@ -25,16 +25,12 @@ const DeviceMigrator = require('../../lib/DeviceMigrator');
 module.exports = class PanelDevice extends Homey.Device {
 
   async onInit() {
-    try {
-      await this.applySource();
-      const { string } = this.getSettings();
-      if (this.hasCapability('panel_string')) await this.setCapabilityValue('panel_string', string || null);
-      this.homey.app.panelPoller.register(this);
-      this.log(this.getName(), `has been initialized on the ${this.getStoreValue('apiSource') || 'v3'} API`);
-    } catch (error) {
-      this.error(error);
-      this.setUnavailable(error).catch((error) => this.error(error));
-    }
+    // the poll does not need either, so a failure still registers
+    await this.applySource().catch((error) => this.error(error));
+    const { string } = this.getSettings();
+    if (this.hasCapability('panel_string')) await this.setCapabilityValue('panel_string', string || null).catch((error) => this.error(error));
+    this.homey.app.panelPoller.register(this);
+    this.log(this.getName(), `has been initialized on the ${this.getStoreValue('apiSource') || 'v3'} API`);
   }
 
   async onUninit() {
@@ -49,7 +45,9 @@ module.exports = class PanelDevice extends Homey.Device {
     // Homey's own "exclude from Energy" toggle is an energy_* setting
     if (changedKeys.length && changedKeys.every((key) => key.startsWith('energy_'))) return;
     // after onSettings resolves the new values apply; then register with the new login
-    this.homey.setTimeout(() => this.homey.app.panelPoller.register(this), 1000);
+    this.homey.setTimeout(() => {
+      this.shareLogin().catch((error) => this.error(error));
+    }, 1000);
   }
 
   /** Called by lib/panelPoller.js; `null` clears a tile, `undefined` leaves it. */
@@ -86,6 +84,26 @@ module.exports = class PanelDevice extends Homey.Device {
   /** Repair stores the new login and API; poll with them. */
   async restartDevice() {
     await this.applySource().catch((error) => this.error(error));
+    await this.shareLogin();
+  }
+
+  /** One login per system: the other panels of this system get it too, then the poll uses it. */
+  async shareLogin() {
+    const { systemId, username, password } = this.getSettings();
+    const source = this.getStoreValue('apiSource') || 'v3';
+    const apiSystemId = this.getStoreValue('apiSystemId') || systemId;
+    for (const other of this.driver.getDevices()) {
+      if (other === this || other.getSettings().systemId !== systemId) continue;
+      try {
+        const settings = other.getSettings();
+        if (settings.username !== username || settings.password !== password) await other.setSettings({ username, password });
+        if ((other.getStoreValue('apiSource') || 'v3') !== source || other.getStoreValue('apiSystemId') !== apiSystemId) {
+          await other.useSource(source, apiSystemId);
+        }
+      } catch (error) {
+        this.error(error);
+      }
+    }
     this.homey.app.panelPoller.register(this);
   }
 

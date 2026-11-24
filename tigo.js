@@ -165,15 +165,24 @@ class TigoClient {
   async _makeRequest(actionPath, data, timeout, method, opts) {
     if (Date.now() < this.rateLimitedUntil) throw this._error(this.translate('errors.rateLimit', 'Too many requests'), 429);
     try {
+      return await this._rateLimited(actionPath, data, timeout, method, opts);
+    } catch (error) {
+      if (error.statusCode !== 401 || actionPath.split('?')[0] === this.loginPath || !this.password) throw error;
+      await this.login();
+      return this._rateLimited(actionPath, data, timeout, method, opts);
+    }
+  }
+
+  /** A request whose 429 starts the cooldown. */
+  async _rateLimited(actionPath, data, timeout, method, opts) {
+    try {
       return await this._request(actionPath, data, timeout, method, opts);
     } catch (error) {
       if (error.statusCode === 429) {
         const retryAfter = Number(error.retryAfter) * 1000;
         this.rateLimitedUntil = Date.now() + (retryAfter > 0 ? retryAfter : RATE_LIMIT_COOLDOWN);
       }
-      if (error.statusCode !== 401 || actionPath.split('?')[0] === this.loginPath || !this.password) throw error;
-      await this.login();
-      return this._request(actionPath, data, timeout, method, opts);
+      throw error;
     }
   }
 
@@ -230,6 +239,7 @@ class TigoClient {
       const payload = JSON.parse(result.body);
       // logs the raw response only while a capture is armed (lib/tigoCapture.js)
       capture.record(actionPath, payload, this.log, this.source);
+      if (csv) throw Error(payload.message || `Expected CSV but received ${contentType}`);
       return Promise.resolve(payload);
     } catch (error) {
       return Promise.reject(error);
@@ -242,9 +252,15 @@ class TigoClient {
       opts.timeout = timeout || this.timeout;
       const req = https.request(opts, (res) => {
         let resBody = '';
+        res.setEncoding('utf8');
         res.on('data', (chunk) => {
           resBody += chunk;
         });
+        // a stall after the headers ends without 'end' or a request error
+        res.once('close', () => {
+          if (!res.complete) reject(Error('The connection was terminated while the message was still being sent'));
+        });
+        res.on('error', (e) => reject(e));
         res.once('end', () => {
           this.lastResponse = resBody;
           if (!res.complete) {

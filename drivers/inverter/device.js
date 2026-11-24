@@ -49,6 +49,7 @@ const ALERTS_INTERVAL = 15 * 60 * 1000;
 module.exports = class MyDevice extends Homey.Device {
 
   async onInit() {
+    if (this.destroyed) return;
     try {
       this.settings = await this.getSettings();
       const { username, password } = this.settings;
@@ -73,13 +74,14 @@ module.exports = class MyDevice extends Homey.Device {
       this.log(this.getName(), `has been initialized on the ${this.source} API, system ${this.apiSystemId}`);
     } catch (error) {
       this.error(error);
-      this.setUnavailable(error).catch(this.error);
+      this.setUnavailable(error).catch((err) => this.error(err));
       this.restarting = false;
       this.restartDevice(60 * 1000).catch((error) => this.error(error));
     }
   }
 
   async onUninit() {
+    this.destroyed = true;
     this.log('unInit', this.getName());
     this.unregisterListeners();
     await saveCounters(this);
@@ -89,8 +91,10 @@ module.exports = class MyDevice extends Homey.Device {
     this.log('added', this.getName());
   }
 
-  async onSettings({ oldSettings, newSettings, changedKeys }) {
-    this.log('Settings changed', this.getName(), newSettings);
+  async onSettings({ changedKeys }) {
+    // Homey's own "exclude from Energy" toggle is an energy_* setting
+    if (changedKeys.length && changedKeys.every((key) => key.startsWith('energy_'))) return;
+    this.log('Settings changed', this.getName(), changedKeys);
     this.restartDevice(1000).catch((error) => this.error(error));
   }
 
@@ -99,6 +103,7 @@ module.exports = class MyDevice extends Homey.Device {
   }
 
   async onDeleted() {
+    this.destroyed = true;
     this.unregisterListeners();
     this.log('Device was deleted', this.getName());
   }
@@ -112,6 +117,7 @@ module.exports = class MyDevice extends Homey.Device {
     this.log(`Device will restart in ${dly / 1000} seconds`);
     // this.setUnavailable(this.zigbee2MqttType, 'is restarting');
     await setTimeoutPromise(dly);
+    if (this.destroyed) return;
     this.onInit().catch((error) => this.error(error));
   }
 
@@ -211,8 +217,11 @@ module.exports = class MyDevice extends Homey.Device {
   async handleReading(reading) {
     if (!reading) throw Error(this.homey.__('errors.noData'));
     if (reading.updatedAt !== this.lastUpdatedOn) {
+      // after an app start, a timestamp with a zone tells how old the data already is
+      const at = this.lastUpdatedOn === undefined && /(Z|[+-]\d\d:?\d\d)$/.test(String(reading.updatedAt))
+        ? Date.parse(reading.updatedAt) : NaN;
       this.lastUpdatedOn = reading.updatedAt;
-      this.updatedSeenAt = Date.now();
+      this.updatedSeenAt = Number.isFinite(at) && at < Date.now() ? at : Date.now();
     }
     const connectionLost = Date.now() - this.updatedSeenAt > CONNECTION_LOST_AFTER;
     if (connectionLost !== !!this.connectionLost) {

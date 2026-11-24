@@ -415,7 +415,11 @@ fixtures.makePanel = ({
     log() {},
     error() {},
     getName: () => `P${objectId}`,
+    driver: { getDevices: () => [device] },
     getSettings: () => ({ ...settings }),
+    setSettings: async (changed) => {
+      Object.assign(settings, changed);
+    },
     getStoreValue: (key) => store[key],
     setStoreValue: async (key, value) => {
       store[key] = value;
