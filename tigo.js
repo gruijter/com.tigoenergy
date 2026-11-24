@@ -260,7 +260,7 @@ class TigoClient {
         res.once('close', () => {
           if (!res.complete) reject(Error('The connection was terminated while the message was still being sent'));
         });
-        res.on('error', (e) => reject(e));
+        res.once('error', reject);
         res.once('end', () => {
           this.lastResponse = resBody;
           if (!res.complete) {
