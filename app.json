@@ -263,19 +263,19 @@
   "drivers": [
     {
       "name": {
-        "en": "Solar inverter",
-        "nl": "PV inverter",
-        "de": "Solarwechselrichter",
-        "fr": "Onduleur solaire",
-        "es": "Inversor solar",
-        "it": "Inverter solare",
-        "da": "Solcelleinverter",
-        "sv": "Solväxelriktare",
-        "no": "Solcelleinverter",
-        "pl": "Falownik solarny",
-        "ru": "Солнечный инвертор",
-        "ar": "عاكس شمسي",
-        "ko": "태양광 인버터"
+        "en": "Solar system",
+        "nl": "PV-systeem",
+        "de": "Solaranlage",
+        "fr": "Système solaire",
+        "es": "Sistema solar",
+        "it": "Impianto solare",
+        "da": "Solcelleanlæg",
+        "sv": "Solcellssystem",
+        "no": "Solcelleanlegg",
+        "pl": "System solarny",
+        "ru": "Солнечная электростанция",
+        "ar": "نظام طاقة شمسية",
+        "ko": "태양광 시스템"
       },
       "class": "solarpanel",
       "capabilities": [
