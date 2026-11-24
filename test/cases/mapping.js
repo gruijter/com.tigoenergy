@@ -15,7 +15,9 @@ module.exports = async (t) => {
 
   const device = fixtures.makeDevice();
   await device.handleDeviceData({ summary });
-  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => {
+    setImmediate(resolve);
+  });
   t.eq(device.values.measure_power, Number(summary.last_power_dc), 'measure_power is last_power_dc (W)');
   t.eq(device.values['meter_power.today'], Number(summary.daily_energy_dc) / 1000, 'meter_power.today is daily_energy_dc in kWh');
   const lifetime = Number(summary.lifetime_energy_dc) / 1000;
@@ -37,9 +39,13 @@ module.exports = async (t) => {
   // the lifetime counter never goes down
   const falling = fixtures.makeDevice();
   await falling.handleDeviceData({ summary: { ...summary, lifetime_energy_dc: 2000000 } });
-  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => {
+    setImmediate(resolve);
+  });
   await falling.handleDeviceData({ summary: { ...summary, lifetime_energy_dc: 1000000, updated_on: 'later' } });
-  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => {
+    setImmediate(resolve);
+  });
   t.eq(falling.values.meter_power, 2000, 'one lower lifetime reading is held');
 
   // alarm_problem from the systems list

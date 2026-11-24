@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "main": "app.js",
   "engines": {
-    "node": ">=12.16.1"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts --ignore-path .gitignore .",
     "test": "node test/run.js && node test/solar-titles.js && node test/migration.js && (test ! -f ../.agents/sync/sync-shared.js || node ../.agents/sync/sync-shared.js check com.tigoenergy)"
   },
   "devDependencies": {
-    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.11",
-    "eslint": "^7.32.0",
-    "eslint-config-athom": "^3.1.5"
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^1.8.3",
+    "eslint": "^8.57.1",
+    "eslint-config-athom": "^4.0.2"
   }
 }
