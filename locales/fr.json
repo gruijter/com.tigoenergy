@@ -7,5 +7,11 @@
     "httpFailed": "La requête vers Tigo a échoué",
     "systemNotOnAccount": "Ce système Tigo n'est pas sur ce compte"
   },
-  "migrating": "Mise à jour des capacités…"
+  "migrating": "Mise à jour des capacités…",
+  "warnings": {
+    "noPremium": "Fonctionne sans abonnement. Tigo EI Premium donne des données plus récentes et plus détaillées."
+  },
+  "pair": {
+    "continue": "Continuer"
+  }
 }

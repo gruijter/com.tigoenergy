@@ -21,19 +21,28 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 
 const Homey = require('homey');
 const util = require('util');
-const TigoClient = require('../../tigo');
 const capture = require('../../lib/tigoCapture');
 const DeviceMigrator = require('../../lib/DeviceMigrator');
 const { solarTitle } = require('../../lib/solarTitles');
 const { monotonic, raiseListenerCeiling, saveCounters } = require('../../lib/deviceHelpers');
+const {
+  clientFor, connect, findSystem, needsPremium,
+} = require('../../lib/tigoSource');
+const { fromSummary, fromHomepage } = require('../../lib/tigoReadings');
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
 // Longer than a night: whether Tigo keeps updating while the panels are dark is not verified.
 const CONNECTION_LOST_AFTER = 24 * 60 * 60 * 1000;
-// Without new data (night, or a gateway offline) poll every 10 minutes instead of every minute.
+// Without new data for IDLE_AFTER (night, or a gateway offline) poll less often. The app's API
+// has 15-minute data (per its third-party client, not verified).
 const IDLE_AFTER = 30 * 60 * 1000;
-const IDLE_INTERVAL = 10 * 60 * 1000;
+const CADENCE = {
+  v3: { interval: 0, idle: 10 * 60 * 1000 },
+  mobile: { interval: 5 * 60 * 1000, idle: 30 * 60 * 1000 },
+};
+// on the app's API, how often to look whether the official API (EI Premium) works again
+const PREMIUM_RECHECK = 24 * 60 * 60 * 1000;
 // The alerts come with the systems list, a second request; the poll runs every minute.
 const ALERTS_INTERVAL = 15 * 60 * 1000;
 
@@ -44,18 +53,24 @@ module.exports = class MyDevice extends Homey.Device {
       this.settings = await this.getSettings();
       const { username, password } = this.settings;
       capture.arm(`device restart: ${this.getName()}`);
-      this.api = new TigoClient({
+      this.source = this.getStoreValue('apiSource') || 'v3';
+      this.apiSystemId = this.getStoreValue('apiSystemId') || this.settings.systemId;
+      capture.recordLogin({
+        username, password, systemId: this.apiSystemId, systemName: this.settings.systemName, apiSource: this.source,
+      }, (...args) => this.log(...args));
+      this.api = clientFor(this.source, {
         username, password, homey: this.homey, log: (...args) => this.log(...args),
       });
+      this.premiumCheckedAt = 0;
       this.restarting = false;
       this.busy = false;
-      const changed = await DeviceMigrator.migrateCapabilities(this, this.driver.manifest.capabilities);
+      const changed = await DeviceMigrator.migrateCapabilities(this, this.driver.capabilityList(this.source));
       // a re-added capability is back on the manifest's options
       await DeviceMigrator.syncCapabilityOptions(this, this.capabilityOptions(), { force: changed });
       await this.startListeners();
       await this.setAvailable();
       await this.doPoll(); // initial poll
-      this.log(this.getName(), 'has been initialized');
+      this.log(this.getName(), `has been initialized on the ${this.source} API, system ${this.apiSystemId}`);
     } catch (error) {
       this.error(error);
       this.setUnavailable(error).catch(this.error);
@@ -129,36 +144,74 @@ module.exports = class MyDevice extends Homey.Device {
   //   }
   // }
 
-  /** No new data for IDLE_AFTER: only every IDLE_INTERVAL. */
   pollDue(now = Date.now()) {
-    if (!this.updatedSeenAt || now - this.updatedSeenAt < IDLE_AFTER) return true;
-    return now - (this.lastRequestAt || 0) >= IDLE_INTERVAL;
+    const cadence = CADENCE[this.source] || CADENCE.v3;
+    const idle = this.updatedSeenAt && now - this.updatedSeenAt >= IDLE_AFTER;
+    return now - (this.lastRequestAt || 0) >= (idle ? cadence.idle : cadence.interval);
+  }
+
+  /**
+   * Move to the other API when it holds this system; the device restarts on it.
+   * @returns {Promise<boolean>} whether it moves
+   */
+  async switchSource(only) {
+    try {
+      const {
+        username, password, systemId, systemName,
+      } = this.settings;
+      const { source, systems } = await connect({
+        username, password, homey: this.homey, log: (...args) => this.log(...args),
+      }, { only });
+      const system = findSystem(systems, { ids: [this.apiSystemId, systemId], name: systemName });
+      if (source === this.source || !system) return false;
+      this.log(`${this.getName()}: moving from the ${this.source} to the ${source} API`);
+      await this.setStoreValue('apiSource', source);
+      await this.setStoreValue('apiSystemId', `${system.id}`);
+      this.restartDevice(1000).catch((error) => this.error(error));
+      return true;
+    } catch (error) {
+      this.log(`${this.getName()}: ${only} API not usable:`, error.statusCode || '', error.message);
+      return false;
+    }
   }
 
   async doPoll() {
     try {
       if (!this.api) throw Error(this.homey.__('errors.notConnected'));
       if (!this.pollDue()) return;
-      this.lastRequestAt = Date.now();
+      const now = Date.now();
+      this.lastRequestAt = now;
+      if (this.source === 'mobile' && now - this.premiumCheckedAt >= PREMIUM_RECHECK) {
+        this.premiumCheckedAt = now;
+        if (await this.switchSource('v3')) return;
+      }
       if (!this.api.bearerToken) await this.api.login();
-      const status = await this.api.getStatus({ id: this.settings.systemId });
-      if (!status) throw Error(this.homey.__('errors.noData'));
-      await this.handleDeviceData(status);
+      if (this.source === 'mobile') {
+        await this.handleReading(fromHomepage(await this.api.getHomepage({ id: this.apiSystemId })));
+        return;
+      }
+      await this.handleDeviceData(await this.api.getStatus({ id: this.apiSystemId }));
       // a failed alerts check leaves the device available
       await this.updateAlerts().catch((error) => this.error(error));
     } catch (error) {
-      this.error(error);
+      this.error(`poll on the ${this.source} API failed:`, error.statusCode || '', error.message);
       // a rate-limit cooldown passes by itself; the last values stay
       if (error.statusCode === 429) return;
+      if (this.source === 'v3' && needsPremium(error) && await this.switchSource('mobile')) return;
       this.setUnavailable(error).catch((error) => this.error(error));
     }
   }
 
+  /** An answer of the official data/summary. */
   async handleDeviceData(status) {
-    // console.dir(status, { depth: null });
-    if (!status || !status.summary) throw Error(this.homey.__('errors.noData'));
-    if (status.summary.updated_on !== this.lastUpdatedOn) {
-      this.lastUpdatedOn = status.summary.updated_on;
+    return this.handleReading(fromSummary(status));
+  }
+
+  /** @param {object} reading { powerW, todayKwh, lifetimeKwh, updatedAt } (lib/tigoReadings.js) */
+  async handleReading(reading) {
+    if (!reading) throw Error(this.homey.__('errors.noData'));
+    if (reading.updatedAt !== this.lastUpdatedOn) {
+      this.lastUpdatedOn = reading.updatedAt;
       this.updatedSeenAt = Date.now();
     }
     const connectionLost = Date.now() - this.updatedSeenAt > CONNECTION_LOST_AFTER;
@@ -168,27 +221,16 @@ module.exports = class MyDevice extends Homey.Device {
     }
     await this.setAvailable().catch((error) => this.error(error));
     this.lastPoll = Date.now();
-    this.lastSummary = status.summary;
     await this.setCapability('alarm_connectivity', connectionLost);
     // a day-old power reading is not the current one
     if (connectionLost) await this.setCapabilityValue('measure_power', null).catch((error) => this.error(error));
-    else this.setCapability('measure_power', Number(status.summary.last_power_dc)).catch((error) => this.error(error));
-    const lifetime = Number(status.summary.lifetime_energy_dc) / 1000;
-    if (lifetime > 0) {
-      monotonic(this, 'meter_power', lifetime)
+    else this.setCapability('measure_power', reading.powerW).catch((error) => this.error(error));
+    if (reading.lifetimeKwh > 0) {
+      monotonic(this, 'meter_power', reading.lifetimeKwh)
         .then((value) => this.setCapability('meter_power', value))
         .catch((error) => this.error(error));
     }
-    this.setCapability('meter_power.today', Number(status.summary.daily_energy_dc) / 1000).catch((error) => this.error(error));
-    // // set settings that have changed
-    // const newSettings = {
-    //   systemId,
-    //   apiKey,
-    //   systemName,
-    //   systemSize,
-    //   interval,
-    // };
-    // for (const [key, value] of Object.entries(newSettings)) this.setSetting(key, value);
+    this.setCapability('meter_power.today', reading.todayKwh).catch((error) => this.error(error));
   }
 
   /** alarm_problem from the system's recent_alerts_count; what Tigo counts as recent is not verified. */
@@ -196,7 +238,7 @@ module.exports = class MyDevice extends Homey.Device {
     if (!this.hasCapability('alarm_problem') || Date.now() - (this.alertsCheckedAt || 0) < ALERTS_INTERVAL) return;
     this.alertsCheckedAt = Date.now();
     const { systems } = await this.api.getSystems();
-    const system = (systems || []).find((item) => String(item.system_id) === String(this.settings.systemId));
+    const system = (systems || []).find((item) => String(item.system_id) === String(this.apiSystemId));
     if (system && typeof system.recent_alerts_count === 'number') await this.setCapability('alarm_problem', system.recent_alerts_count > 0);
   }
 

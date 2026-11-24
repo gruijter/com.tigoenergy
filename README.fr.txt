@@ -1,4 +1,4 @@
 Connectez votre onduleur Tigo à Homey et obtenez un aperçu détaillé de votre production d'énergie solaire.
 Suivez votre puissance actuelle ainsi que votre production totale. Avec l'app Tigo pour Homey, vous pouvez utiliser ces données pour optimiser votre consommation d'énergie, créer des Flows et suivre les performances de votre système — le tout au même endroit.
 Ajoutez chaque panneau solaire comme appareil distinct pour voir sa puissance et sa production du jour.
-Un abonnement Tigo EI Premium ou Professional est requis.
+Fonctionne sans abonnement. Tigo EI Premium donne des données plus récentes et plus détaillées.

@@ -25,8 +25,9 @@ fixture, so they work on both.
 | `sources` | `GET /api/v3/sources/system?system_id=` |
 | `summary` | `GET /api/v3/data/summary?system_id=` (the inverter poll) |
 | `aggregateMin`, `aggregateDay` | `GET /api/v3/data/aggregate?...&level=min|day` (the panel poll; CSV kept as `{ csv }`) |
+| `mobileSystems`, `mobileHomepage`, `mobileLayout`, `mobileEquipments`, `mobilePanelPower`, `mobilePanelEnergy` | the Tigo app's API (`mapi.tigoenergy.com`), fallback without EI Premium; stubs from JeremyWhittaker/tigo_home_assistant's fixtures |
 
-The login is never captured (it holds the token).
+The login response is never captured (it holds the token). The username and password are logged once per account per arm (`credentials`); `from-logs.js` adds them to `zzz_docs/creds.txt`, not to the captures. A refused request is captured as `<name>Error` = `{ status, body }`, also a refused login (`loginError`, `mobileLoginError`).
 
 ## Getting real captures
 
@@ -53,6 +54,7 @@ node test/from-logs.js report.txt --site my-house  # choose the site folder
 | `repair.js` | A new login is stored and restarts the device; a login without the system is refused and changes nothing. |
 | `locales.js` | All 13 languages in every compose translation object, the same keys in every `locales/*.json`, a README per language. |
 | `panel.js` | Panel driver: own capabilities and `energy.excludedByDefault` (out of Homey Energy), icons present, the CSV parser (repeated header, empty and `-` cells), local start/end, one device per layout panel, one poll of 5 requests (Pin, Vin, Iin, RSSI per minute, Pin per day) for all panels of a system, yield vs the string's median, underperforming after 3 days under 85% (dark days not counted), 5/30-min cadence, no minute clears power, 402 vs 429, the Energy toggle not re-registering, separate captures. |
+| `mobile.js` | The Tigo app's API as fallback: login body and headers, 401 re-login, capture names, units (kW/W, Wh/kWh, `-`), pairing on it when the official API lists no system (notice, no `alarm_problem`), a 402 moving a device or a panel system to it, back once a day when EI Premium works again, 5/30-min cadence, panel power per gateway within an hour. |
 | `capture.js` | Arm/claim, the client recording every endpoint but never the login, round trip through a timestamped report, truncation reported, redaction of address, coordinates and contacts. |
 
 ## Adding a case

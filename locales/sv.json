@@ -7,5 +7,11 @@
     "httpFailed": "Förfrågan till Tigo misslyckades",
     "systemNotOnAccount": "Det här Tigo-systemet finns inte på det kontot"
   },
-  "migrating": "Uppdaterar funktioner…"
+  "migrating": "Uppdaterar funktioner…",
+  "warnings": {
+    "noPremium": "Fungerar utan abonnemang. Tigo EI Premium ger mer aktuella och detaljerade data."
+  },
+  "pair": {
+    "continue": "Fortsätt"
+  }
 }

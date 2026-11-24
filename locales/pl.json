@@ -7,5 +7,11 @@
     "httpFailed": "Żądanie do Tigo nie powiodło się",
     "systemNotOnAccount": "Tego systemu Tigo nie ma na tym koncie"
   },
-  "migrating": "Aktualizowanie funkcji…"
+  "migrating": "Aktualizowanie funkcji…",
+  "warnings": {
+    "noPremium": "Działa bez subskrypcji. Tigo EI Premium daje bardziej aktualne i szczegółowe dane."
+  },
+  "pair": {
+    "continue": "Dalej"
+  }
 }

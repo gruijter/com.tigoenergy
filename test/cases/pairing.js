@@ -13,7 +13,9 @@ module.exports = async (t) => {
   await driver.onPair(session);
 
   const info = await session.handlers.login({ username: 'user@example.invalid', password: 'secret' });
-  t.ok(info && Array.isArray(info.systems), 'login returns the systems list');
+  t.eq(info, true, 'login succeeds');
+  t.eq(await session.handlers.noPremium(), false, 'with EI Premium no subscription notice');
+  t.ok(calls.every((call) => call.host !== 'mapi.tigoenergy.com'), "and no request to the Tigo app's API");
   t.ok(calls[0].headers.Authorization.startsWith('Basic '), 'login uses Basic auth');
   t.ok(calls[1].headers.Authorization.startsWith('Bearer '), 'the systems list uses the Bearer token');
 
@@ -26,6 +28,7 @@ module.exports = async (t) => {
     t.ok(typeof device.name === 'string' && device.name.length > 0, `device ${i} has a name (got ${JSON.stringify(device.name)})`);
     t.eq(device.settings.systemId, String(system.system_id), `device ${i} systemId setting`);
     t.eq(JSON.stringify(device.capabilities), JSON.stringify(driver.manifest.capabilities), `device ${i} is paired with the manifest capabilities`);
+    t.eq(device.store.apiSource, 'v3', `device ${i} uses the official API`);
   });
 
   // a new device starts with its final capabilities: no migration right after pairing
@@ -43,8 +46,8 @@ module.exports = async (t) => {
   await DeviceMigrator.migrateCapabilities(paired, driver.manifest.capabilities);
   t.eq(changes.join(), '', 'the first start after pairing migrates nothing');
 
-  // no systems: a clear error
-  fixtures.routeHttps({ '/api/v3/systems': { premium: true } });
+  // no systems on either API: a clear error
+  fixtures.routeHttps({ '/api/v3/systems': { premium: true }, '/api/v3/systems/query': { systems: [] } });
   const empty = fixtures.makeSession();
   await driver.onPair(empty);
   await empty.handlers.login({ username: 'u', password: 'p' });

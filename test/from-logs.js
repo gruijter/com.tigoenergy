@@ -9,7 +9,9 @@ Turn a user's diagnostics report into test fixtures.
     node test/from-logs.js <report.txt> --site name  put them under test/captures/name/
 
 The site folder defaults to the system name (else system_id). Reads the capture blocks written by
-lib/tigoCapture.js.
+lib/tigoCapture.js. Logins in the report are added to zzz_docs/creds.txt (not in git), never to
+test/captures.
+
 */
 
 const fs = require('node:fs');
@@ -17,6 +19,7 @@ const path = require('node:path');
 const capture = require('../lib/tigoCapture');
 
 const CAPTURES = path.join(__dirname, 'captures');
+const CREDS = path.join(__dirname, '..', 'zzz_docs', 'creds.txt');
 const args = process.argv.slice(2);
 const siteArg = args.includes('--site') ? args[args.indexOf('--site') + 1] : undefined;
 const file = args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--site');
@@ -33,14 +36,33 @@ const slug = (s) => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').t
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/^-+|-+$/g, '');
 const siteOf = (caps) => {
-  const system = (caps.systems && caps.systems.systems && caps.systems.systems[0]) || (caps.system && caps.system.system) || {};
-  return slug(system.name || system.system_id || 'site') || 'site';
+  const first = (name) => caps[name] && caps[name].systems && caps[name].systems[0];
+  const system = first('systems') || (caps.system && caps.system.system) || first('mobileSystems') || {};
+  return slug(system.name || system.system_id || system.id || 'site') || 'site';
 };
 // a Tigo error body; the client throws on these, so they should never be captured
 const isError = (payload) => payload.isSuccess === false || payload.type === 'api_error' || Number(payload.status) >= 400;
 
-const { captures, errors } = capture.parseLog(fs.readFileSync(file, 'utf8'));
+const { captures, credentials, errors } = capture.parseLog(fs.readFileSync(file, 'utf8'));
 const names = Object.keys(captures).sort();
+
+// one block per account: '<site> (<source> API, system <id> <name>, <report>)', then username:/password:
+const known = fs.existsSync(CREDS) ? fs.readFileSync(CREDS, 'utf8') : '';
+const accounts = [...new Map(credentials.map((login) => [login.username, login])).values()];
+for (const login of accounts) {
+  if (known.split('\n').includes(`username:${login.username}`)) {
+    console.log(`  keep   login ${login.username}  (already in zzz_docs/creds.txt)`);
+  } else if (dryRun) {
+    console.log(`  would  add login ${login.username} to zzz_docs/creds.txt`);
+  } else {
+    const site = siteArg ? slug(siteArg) : slug(login.systemName || login.systemId || 'site');
+    const block = `\n${site} (${login.apiSource} API, system ${login.systemId} ${login.systemName}, ${path.basename(file)})\n`
+      + `username:${login.username}\npassword:${login.password}\n`;
+    fs.appendFileSync(CREDS, block);
+    console.log(`  add    login ${login.username} to zzz_docs/creds.txt`);
+  }
+}
+
 if (!names.length) {
   console.error('No capture blocks found. The report must come from an app version that logs them,');
   console.error('and the user must have restarted the app (or paired) while that version was running.');

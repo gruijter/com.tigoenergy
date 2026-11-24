@@ -7,5 +7,11 @@
     "httpFailed": "Tigo 요청이 실패했습니다",
     "systemNotOnAccount": "이 Tigo 시스템은 해당 계정에 없습니다"
   },
-  "migrating": "기능 업데이트 중…"
+  "migrating": "기능 업데이트 중…",
+  "warnings": {
+    "noPremium": "구독 없이도 작동합니다. Tigo EI Premium은 더 최신이고 자세한 데이터를 제공합니다."
+  },
+  "pair": {
+    "continue": "계속"
+  }
 }

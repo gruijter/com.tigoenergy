@@ -26,14 +26,14 @@ module.exports = class PanelDevice extends Homey.Device {
 
   async onInit() {
     try {
-      await DeviceMigrator.migrateCapabilities(this, this.driver.manifest.capabilities);
+      await this.applySource();
       const { string } = this.getSettings();
       if (this.hasCapability('panel_string')) await this.setCapabilityValue('panel_string', string || null);
       this.homey.app.panelPoller.register(this);
-      this.log(this.getName(), 'has been initialized');
+      this.log(this.getName(), `has been initialized on the ${this.getStoreValue('apiSource') || 'v3'} API`);
     } catch (error) {
       this.error(error);
-      this.setUnavailable(error).catch(this.error);
+      this.setUnavailable(error).catch((error) => this.error(error));
     }
   }
 
@@ -70,8 +70,22 @@ module.exports = class PanelDevice extends Homey.Device {
     }
   }
 
-  /** Repair stores the new login; poll with it. */
+  /** Capabilities for the API in the store (the app's API has no V, I and RSSI). */
+  async applySource() {
+    const source = this.getStoreValue('apiSource') || 'v3';
+    await DeviceMigrator.migrateCapabilities(this, this.driver.capabilityList(source));
+  }
+
+  /** Called by lib/panelPoller.js when the system moves to another API. */
+  async useSource(source, apiSystemId) {
+    await this.setStoreValue('apiSource', source);
+    await this.setStoreValue('apiSystemId', apiSystemId);
+    await this.applySource().catch((error) => this.error(error));
+  }
+
+  /** Repair stores the new login and API; poll with them. */
   async restartDevice() {
+    await this.applySource().catch((error) => this.error(error));
     this.homey.app.panelPoller.register(this);
   }
 

@@ -20,8 +20,8 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 'use strict';
 
 const Homey = require('homey');
-const TigoClient = require('../../tigo');
 const capture = require('../../lib/tigoCapture');
+const { connect, findSystem } = require('../../lib/tigoSource');
 
 module.exports = class MyDriver extends Homey.Driver {
 
@@ -29,67 +29,76 @@ module.exports = class MyDriver extends Homey.Driver {
     this.log('System driver has been initialized');
   }
 
-  async onPair(session) {
-    let username = '';
-    let password = '';
-    let info = null;
+  /** The capabilities of a device on `source`: the app's API has no alerts. */
+  capabilityList(source) {
+    const caps = [...this.manifest.capabilities];
+    return source === 'mobile' ? caps.filter((cap) => cap !== 'alarm_problem') : caps;
+  }
 
-    session.setHandler('login', async (data) => {
-      username = data.username;
-      password = data.password;
+  /** Login handler plus the subscription_notice view's question; `found()` holds the result. */
+  pairLogin(session, why) {
+    let found = null;
+    session.setHandler('login', async ({ username, password }) => {
       try {
-        capture.arm('pairing', { force: true });
-        this.api = new TigoClient({
+        capture.arm(why, { force: true });
+        const { source, api, systems } = await connect({
           username, password, homey: this.homey, log: (...args) => this.log(...args),
         });
-        await this.api.login();
-        info = await this.api.getSystems();
-        return Promise.resolve(info);
+        this.log(`Pairing: ${systems.length} system(s) via ${source}`);
+        capture.recordLogin({
+          username, password, systemId: systems.map((system) => system.id).join(','), systemName: systems.map((system) => system.name).join(','), apiSource: source,
+        }, (...args) => this.log(...args));
+        found = {
+          username, password, source, api, systems,
+        };
+        return true;
       } catch (error) {
         this.error(error);
-        return Promise.reject(error);
+        throw error;
       }
     });
+    session.setHandler('noPremium', async () => Boolean(found && found.source === 'mobile' && found.systems.length));
+    return () => found;
+  }
 
+  async onPair(session) {
+    const found = this.pairLogin(session, 'pairing');
     session.setHandler('list_devices', async () => {
-      if (!info || !info.systems) throw Error(this.homey.__('errors.noSystem'));
-      const { systems } = info;
-      const devices = systems.map((system) => {
-        return {
-          name: system.name,
-          data: {
-            id: system.system_id,
-          },
-          capabilities: [...this.manifest.capabilities],
-          settings: {
-            username,
-            password,
-            systemId: `${system.system_id}`,
-            systemName: system.name,
-            systemSize: `${system.power_rating}`,
-          },
-        };
-      });
-      return Promise.all(devices);
+      const {
+        username, password, source, systems,
+      } = found() || {};
+      if (!systems || !systems.length) throw Error(this.homey.__('errors.noSystem'));
+      return systems.map((system) => ({
+        name: system.name,
+        data: { id: system.id },
+        capabilities: this.capabilityList(source),
+        store: { apiSource: source, apiSystemId: `${system.id}` },
+        settings: {
+          username,
+          password,
+          systemId: `${system.id}`,
+          systemName: `${system.name}`,
+          systemSize: system.powerRating !== undefined ? `${system.powerRating}` : '',
+        },
+      }));
     });
   }
 
-  /** New login for a paired system, without pairing again. */
+  /** New login for a paired system, without pairing again; also picks the API anew. */
   async onRepair(session, device) {
     session.setHandler('login', async ({ username, password }) => {
       try {
         capture.arm('repair', { force: true });
-        const api = new TigoClient({
+        const { source, systems } = await connect({
           username, password, homey: this.homey, log: (...args) => this.log(...args),
         });
-        await api.login();
-        const { systems } = await api.getSystems();
-        const { systemId } = device.getSettings();
-        if (!(systems || []).some((system) => String(system.system_id) === String(systemId))) {
-          throw Error(this.homey.__('errors.systemNotOnAccount'));
-        }
-        this.log(`Repair: new login for ${device.getName()}`);
+        const { systemId, systemName } = device.getSettings();
+        const system = findSystem(systems, { ids: [device.getStoreValue('apiSystemId'), systemId], name: systemName });
+        if (!system) throw Error(this.homey.__('errors.systemNotOnAccount'));
+        this.log(`Repair: new login for ${device.getName()} via ${source}`);
         await device.setSettings({ username, password });
+        await device.setStoreValue('apiSource', source);
+        await device.setStoreValue('apiSystemId', `${system.id}`);
         device.restartDevice(1000).catch((error) => this.error(error));
         return true;
       } catch (error) {

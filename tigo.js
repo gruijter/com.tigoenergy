@@ -54,6 +54,8 @@ class TigoClient {
     this.homey = options.homey;
     this.log = options.log;
     this.rateLimitedUntil = 0;
+    this.loginPath = loginEP;
+    this.source = 'v3';
   }
 
   /** The locale text of `key`; `fallback` without Homey (plain node). */
@@ -169,7 +171,7 @@ class TigoClient {
         const retryAfter = Number(error.retryAfter) * 1000;
         this.rateLimitedUntil = Date.now() + (retryAfter > 0 ? retryAfter : RATE_LIMIT_COOLDOWN);
       }
-      if (error.statusCode !== 401 || actionPath === loginEP || !this.password) throw error;
+      if (error.statusCode !== 401 || actionPath.split('?')[0] === this.loginPath || !this.password) throw error;
       await this.login();
       return this._request(actionPath, data, timeout, method, opts);
     }
@@ -182,12 +184,15 @@ class TigoClient {
     return error;
   }
 
+  _headers(actionPath) {
+    if (actionPath === loginEP) return { Authorization: `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}` };
+    return { Authorization: `Bearer ${this.bearerToken}` };
+  }
+
   async _request(actionPath, data, timeout, method, { csv = false } = {}) {
     try {
       const postData = JSON.stringify(data);
-      const headers = { };
-      if (actionPath === loginEP) headers.Authorization = `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`;
-      else headers.Authorization = `Bearer ${this.bearerToken}`;
+      const headers = this._headers(actionPath);
       const options = {
         hostname: this.host,
         port: this.port,
@@ -206,6 +211,7 @@ class TigoClient {
       // find errors
       if (result.statusCode === 429) throw this._error(this.translate('errors.rateLimit', 'Too many requests'), 429, result.headers['retry-after']);
       if (result.statusCode !== 200) {
+        capture.recordError(actionPath, result.statusCode, result.body, this.log, this.source);
         if (result.body && result.body.includes('"message":')) {
           const errorMsg = JSON.parse(result.body);
           let msg = errorMsg.name;
@@ -215,7 +221,7 @@ class TigoClient {
         throw this._error(`${this.translate('errors.httpFailed', 'HTTP request failed')}. ${this.lastResponse}`, result.statusCode);
       }
       if (csv && !/application\/json/.test(contentType)) {
-        capture.record(actionPath, { csv: result.body }, this.log);
+        capture.record(actionPath, { csv: result.body }, this.log, this.source);
         return result.body;
       }
       if (!/application\/json/.test(contentType)) {
@@ -223,7 +229,7 @@ class TigoClient {
       }
       const payload = JSON.parse(result.body);
       // logs the raw response only while a capture is armed (lib/tigoCapture.js)
-      capture.record(actionPath, payload, this.log);
+      capture.record(actionPath, payload, this.log, this.source);
       return Promise.resolve(payload);
     } catch (error) {
       return Promise.reject(error);

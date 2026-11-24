@@ -7,5 +7,11 @@
     "httpFailed": "فشل الطلب إلى Tigo",
     "systemNotOnAccount": "نظام Tigo هذا غير موجود في ذلك الحساب"
   },
-  "migrating": "جارٍ تحديث الإمكانيات…"
+  "migrating": "جارٍ تحديث الإمكانيات…",
+  "warnings": {
+    "noPremium": "يعمل بدون اشتراك. يوفر Tigo EI Premium بيانات أحدث وأكثر تفصيلاً."
+  },
+  "pair": {
+    "continue": "متابعة"
+  }
 }

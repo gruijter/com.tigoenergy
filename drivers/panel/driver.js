@@ -19,9 +19,7 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-const TigoClient = require('../../tigo');
-const capture = require('../../lib/tigoCapture');
-// onRepair (new login, system must be on the account) is the inverter's
+// onRepair (new login, system must be on the account) and the pair login are the inverter's
 const InverterDriver = require('../inverter/driver');
 
 /** The panels of a systems/layout answer, with their string. */
@@ -47,43 +45,36 @@ module.exports = class PanelDriver extends InverterDriver {
     this.log('Panel driver has been initialized');
   }
 
+  /** The app's API gives no voltage, current or RSSI per panel (its third-party client, not verified). */
+  capabilityList(source) {
+    const caps = [...this.manifest.capabilities];
+    const none = ['measure_volt_panel', 'measure_amp_panel', 'measure_rssi_panel'];
+    return source === 'mobile' ? caps.filter((cap) => !none.includes(cap)) : caps;
+  }
+
   async onPair(session) {
-    let username = '';
-    let password = '';
-    let api = null;
-    let systems = [];
-
-    session.setHandler('login', async (data) => {
-      ({ username, password } = data);
-      try {
-        capture.arm('pairing panels', { force: true });
-        api = new TigoClient({
-          username, password, homey: this.homey, log: (...args) => this.log(...args),
-        });
-        await api.login();
-        ({ systems = [] } = await api.getSystems());
-        return true;
-      } catch (error) {
-        this.error(error);
-        throw error;
-      }
-    });
-
+    const found = this.pairLogin(session, 'pairing panels');
     session.setHandler('list_devices', async () => {
-      if (!systems.length) throw Error(this.homey.__('errors.noSystem'));
+      const {
+        username, password, source, api, systems,
+      } = found() || {};
+      if (!systems || !systems.length) throw Error(this.homey.__('errors.noSystem'));
       const devices = [];
       for (const system of systems) {
-        const panels = panelsOf(await api.getLayout({ id: system.system_id }));
+        const panels = panelsOf(await api.getLayout({ id: system.id }));
         for (const panel of panels) {
           devices.push({
             name: systems.length > 1 ? `${system.name} ${panel.label}` : `${panel.label}`,
-            data: { id: panel.panel_id },
-            capabilities: [...this.manifest.capabilities],
-            store: { objectId: panel.object_id, timezone: system.timezone },
+            // the app's layout has no panel_id in its third-party client's fixture
+            data: { id: panel.panel_id !== undefined ? panel.panel_id : panel.object_id },
+            capabilities: this.capabilityList(source),
+            store: {
+              objectId: panel.object_id, timezone: system.timezone, apiSource: source, apiSystemId: `${system.id}`,
+            },
             settings: {
               username,
               password,
-              systemId: `${system.system_id}`,
+              systemId: `${system.id}`,
               systemName: `${system.name}`,
               label: `${panel.label}`,
               string: `${panel.string || ''}`,

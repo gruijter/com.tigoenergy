@@ -12,7 +12,12 @@ module.exports = async (t) => {
   const makeDevice = (systemId) => {
     const device = {
       settings: { systemId: String(systemId), username: 'old', password: 'old' },
+      store: {},
       restarted: 0,
+      getStoreValue: (key) => device.store[key],
+      setStoreValue: async (key, value) => {
+        device.store[key] = value;
+      },
       getName: () => 'Tigo test',
       getSettings: () => ({ ...device.settings }),
       setSettings: async (changes) => Object.assign(device.settings, changes),
@@ -33,7 +38,9 @@ module.exports = async (t) => {
   t.eq(device.settings.username, 'new@example.invalid', 'the username is stored');
   t.eq(device.settings.password, 'newpass', 'the password is stored');
   t.eq(device.restarted, 1, 'the device restarts on the new login');
+  t.eq(device.store.apiSource, 'v3', 'on the official API');
 
+  fixtures.routeHttps({ '/api/v3/systems/query': { systems: [] } });
   const other = makeDevice(999999999);
   const otherSession = fixtures.makeSession();
   await driver.onRepair(otherSession, other);

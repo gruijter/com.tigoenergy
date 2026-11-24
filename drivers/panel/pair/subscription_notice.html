@@ -1,0 +1,17 @@
+<div id="notice" style="display: none">
+  <p class="homey-subtitle" data-i18n="warnings.noPremium"></p>
+  <button id="next" class="homey-button-primary-full" data-i18n="pair.continue"></button>
+</div>
+
+<script type="text/javascript">
+  Homey.setTitle('Tigo EI Premium');
+  document.getElementById('next').addEventListener('click', () => Homey.showView('list_devices'));
+  // only accounts without EI Premium see this view
+  Homey.emit('noPremium')
+    .then((noPremium) => {
+      if (!noPremium) return Homey.showView('list_devices');
+      document.getElementById('notice').style.display = '';
+      return null;
+    })
+    .catch(() => Homey.showView('list_devices'));
+</script>

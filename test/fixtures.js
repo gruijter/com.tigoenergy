@@ -102,6 +102,37 @@ const docStubs = {
   },
 };
 
+// The Tigo app's API (lib/TigoMobileClient.js): shapes from the fixtures of
+// JeremyWhittaker/tigo_home_assistant (Apache-2.0), not seen live. Ids match the v3 stubs.
+docStubs.mobileLogin = { user: { auth: 'MOBILE', expires: '2027-01-01 00:00:00' } };
+docStubs.mobileSystems = {
+  systems: [{
+    id: 1, name: 'Test System', timezone: 'America/Los_Angeles', latitude: '<redacted>', longitude: '<redacted>',
+  }],
+};
+docStubs.mobileHomepage = {
+  energyProduction: {
+    now: { value: 2.4, unit: 'kW' }, day: 12500, week: 72250, month: 310750, year: 4200500, lifetime: 24500125,
+  },
+  minLastTime: '2026-08-28 10:20:00',
+};
+docStubs.mobileEquipments = [
+  { equipmentType: 'unit', equipmentId: 'CCA', equipmentSerial: 'CCA-1' },
+  {
+    equipmentType: 'panel', equipmentId: 'A1', equipmentSerial: '04C05B8001234', equipmentModel: 'TS4-S',
+  },
+];
+docStubs.mobilePanelPower = {
+  lastData: '2026-08-28 10:30:00',
+  dataset: [{
+    order: [3, 4],
+    data: [{ t: '10:00', d: [90, 100] }, { t: '10:15', d: ['-', 110] }, { t: '10:30', d: [95, '-'] }, { t: '23:59', d: ['-', '-'] }],
+  }],
+};
+docStubs.mobilePanelEnergy = {
+  dataset: { 3: 1200, 4: 1150 }, datasetLastData: { 3: '2026-08-28 10:15:00' }, dailyStats: { total_agg_energy: 2350 },
+};
+
 // data/aggregate CSV, example of the API V3 document p. 23 (header=id; the header can change)
 docStubs.aggregateMin = {
   csv: 'Datetime,1,2,3\n2014/09/23 00:06:23,23,23,23\n2014/09/23 00:06:24,23,23,23\nDatetime,1,2\n2014/09/23 00:06:28,23,23\n',
@@ -250,8 +281,23 @@ const ROUTES = {
   '/api/v3/data/summary': 'summary',
 };
 
-const routeOf = (urlPath) => {
+const MOBILE_ROUTES = {
+  '/api/v3/user/login': 'mobileLogin',
+  '/api/v3/systems/query': 'mobileSystems',
+  '/api/v3/systems/layout': 'layout',
+  '/api/v4/equipments': 'mobileEquipments',
+  '/api/v4/system/summary/summary': 'mobilePanelPower',
+  '/api/v4/system/summary/aggenergy': 'mobilePanelEnergy',
+};
+
+const MOBILE_HOST = 'mapi.tigoenergy.com';
+
+const routeOf = (urlPath, host) => {
   const bare = String(urlPath).replace(/\?.*$/, '');
+  if (host === MOBILE_HOST) {
+    if (/^\/api\/v4\/smart\/systems\/[^/]+\/homepage$/.test(bare)) return 'mobileHomepage';
+    return MOBILE_ROUTES[bare];
+  }
   if (/^\/api\/v3\/systems\/\d+$/.test(bare)) return 'system';
   return ROUTES[bare];
 };
@@ -259,16 +305,25 @@ const routeOf = (urlPath) => {
 /**
  * Answer every TigoClient request from the fixtures, for all clients (also the ones a driver or
  * device creates itself). `overrides` maps a path without query to a fixture name, a body, an
- * `{ status, body }` from `fixtures.errors`, or a function of the request options.
- * @returns {object[]} the requests made: { path, headers, method }
+ * `{ status, body }` from `fixtures.errors`, or a function of the request options. Keys starting
+ * with `mobile:` are for the Tigo app's API only; a plain path there answers both hosts.
+ * @returns {object[]} the requests made: { host, path, headers, method, body }
  */
 fixtures.routeHttps = (overrides = {}) => {
   const TigoClient = fixtures.app('tigo.js');
   const calls = [];
-  TigoClient.prototype._makeHttpsRequest = async function fake(options) {
-    calls.push({ path: options.path, headers: { ...options.headers }, method: options.method });
+  const has = (key) => Object.prototype.hasOwnProperty.call(overrides, key);
+  TigoClient.prototype._makeHttpsRequest = async function fake(options, postData) {
+    const host = options.hostname;
+    calls.push({
+      host, path: options.path, headers: { ...options.headers }, method: options.method, body: postData,
+    });
     const bare = options.path.replace(/\?.*$/, '');
-    let answer = Object.prototype.hasOwnProperty.call(overrides, bare) ? overrides[bare] : routeOf(bare);
+    const mobileKey = `mobile:${bare}`;
+    let answer;
+    if (host === MOBILE_HOST && has(mobileKey)) answer = overrides[mobileKey];
+    else if (has(bare)) answer = overrides[bare];
+    else answer = routeOf(bare, host);
     if (typeof answer === 'function') answer = answer(options);
     if (typeof answer === 'string') answer = fixtures.get(answer);
     if (answer === undefined) throw new Error(`No fixture route for ${options.path}`);
@@ -308,6 +363,13 @@ fixtures.makeDevice = ({ capabilities, settings = {} } = {}) => {
     available: null,
     homey: { __: (key) => key },
     settings: { systemId: '1', ...settings },
+    source: 'v3',
+    apiSystemId: settings.systemId || '1',
+    premiumCheckedAt: 0,
+    restarts: 0,
+    restartDevice: async () => {
+      device.restarts += 1;
+    },
     log() {},
     error() {},
     getName: () => 'Tigo test',

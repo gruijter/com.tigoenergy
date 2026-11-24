@@ -50,12 +50,13 @@ module.exports = async (t) => {
   limited.available = true;
   await limited.doPoll();
   t.eq(limited.available, true, 'a 429 leaves the device available');
-  fixtures.routeHttps({ '/api/v3/data/summary': fixtures.errors.premium });
+  fixtures.routeHttps({ '/api/v3/data/summary': fixtures.errors.premium, 'mobile:/api/v3/user/login': fixtures.errors.unauthorized });
   const failing = fixtures.makeDevice();
   failing.api = fixtures.makeClient();
   await failing.doPoll();
-  t.eq(failing.available, false, 'another error makes it unavailable');
+  t.eq(failing.available, false, "a 402 without the Tigo app's API makes it unavailable");
   t.eq(failing.unavailableReason && failing.unavailableReason.message, 'Payment Required', 'with the API message');
+  t.eq(failing.restarts, 0, 'and it stays on the official API');
 
   // onUninit stores the held-back lifetime reading
   fixtures.routeHttps();

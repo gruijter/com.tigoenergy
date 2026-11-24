@@ -161,8 +161,8 @@ module.exports = async (t) => {
   t.eq(dark.values.measure_watt_panel, null, 'no minute in the window clears the power tile');
   t.eq(dark.values.meter_kwh_panel_today, undefined, "and leaves today's energy");
 
-  // errors: 402 makes all panels unavailable, 429 keeps them
-  fixtures.routeHttps({ '/api/v3/data/aggregate': fixtures.errors.premium });
+  // errors: 402 (without the Tigo app's API) makes all panels unavailable, 429 keeps them
+  fixtures.routeHttps({ '/api/v3/data/aggregate': fixtures.errors.premium, 'mobile:/api/v3/user/login': fixtures.errors.unauthorized });
   const paid = fixtures.makePoller();
   const locked = [1, 2].map((objectId) => fixtures.makePanel({ objectId, poller: paid }));
   locked.forEach((device) => paid.register(device));
