@@ -1,0 +1,40 @@
+{
+  "id": "alarm_underperforming_panel_true",
+  "title": {
+    "en": "The panel is underperforming",
+    "nl": "Het paneel presteert te laag",
+    "de": "Das Modul leistet zu wenig",
+    "fr": "Le panneau est sous-performant",
+    "es": "El panel tiene bajo rendimiento",
+    "it": "Il pannello rende poco",
+    "da": "Panelet yder for lidt",
+    "sv": "Panelen presterar för lite",
+    "no": "Panelet yter for lite",
+    "pl": "Panel ma za niską wydajność",
+    "ru": "Панель вырабатывает мало",
+    "ar": "أداء اللوح منخفض",
+    "ko": "패널 성능이 저하됨"
+  },
+  "hint": {
+    "en": "When the panel yields clearly less than its string for several days.",
+    "nl": "Als het paneel meerdere dagen duidelijk minder opbrengt dan de string.",
+    "de": "Wenn das Modul mehrere Tage deutlich weniger liefert als der String.",
+    "fr": "Quand le panneau produit nettement moins que sa chaîne pendant plusieurs jours.",
+    "es": "Cuando el panel produce claramente menos que su string durante varios días.",
+    "it": "Quando il pannello produce molto meno della stringa per più giorni.",
+    "da": "Når panelet i flere dage producerer klart mindre end strengen.",
+    "sv": "När panelen i flera dagar producerar klart mindre än strängen.",
+    "no": "Når panelet i flere dager produserer klart mindre enn strengen.",
+    "pl": "Gdy panel przez kilka dni daje wyraźnie mniej niż string.",
+    "ru": "Когда панель несколько дней вырабатывает заметно меньше стринга.",
+    "ar": "عندما ينتج اللوح أقل بوضوح من سلسلته لعدة أيام.",
+    "ko": "패널이 며칠 동안 스트링보다 확연히 적게 발전할 때."
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=panel"
+    }
+  ]
+}

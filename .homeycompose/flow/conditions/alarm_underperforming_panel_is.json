@@ -1,0 +1,40 @@
+{
+  "id": "alarm_underperforming_panel_is",
+  "title": {
+    "en": "The panel is underperforming",
+    "nl": "Het paneel presteert te laag",
+    "de": "Das Modul leistet zu wenig",
+    "fr": "Le panneau est sous-performant",
+    "es": "El panel tiene bajo rendimiento",
+    "it": "Il pannello rende poco",
+    "da": "Panelet yder for lidt",
+    "sv": "Panelen presterar för lite",
+    "no": "Panelet yter for lite",
+    "pl": "Panel ma za niską wydajność",
+    "ru": "Панель вырабатывает мало",
+    "ar": "أداء اللوح منخفض",
+    "ko": "패널 성능이 저하됨"
+  },
+  "titleFormatted": {
+    "en": "The panel !{{is|is not}} underperforming",
+    "nl": "Het paneel presteert !{{te laag|niet te laag}}",
+    "de": "Das Modul leistet !{{zu wenig|nicht zu wenig}}",
+    "fr": "Le panneau !{{est|n’est pas}} sous-performant",
+    "es": "El panel !{{tiene|no tiene}} bajo rendimiento",
+    "it": "Il pannello !{{rende|non rende}} poco",
+    "da": "Panelet !{{yder|yder ikke}} for lidt",
+    "sv": "Panelen !{{presterar|presterar inte}} för lite",
+    "no": "Panelet !{{yter|yter ikke}} for lite",
+    "pl": "Panel !{{ma|nie ma}} za niskiej wydajności",
+    "ru": "Панель !{{вырабатывает|не вырабатывает}} мало",
+    "ar": "أداء اللوح !{{منخفض|غير منخفض}}",
+    "ko": "패널 성능이 !{{저하됨|저하되지 않음}}"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=panel"
+    }
+  ]
+}

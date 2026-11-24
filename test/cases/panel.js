@@ -36,6 +36,34 @@ module.exports = async (t) => {
     t.ok(def.icon && fs.existsSync(path.join(APP, def.icon)), `${cap} has an icon file`);
   }
 
+  // the underperforming trigger is Homey's own <capability>_true card: declared, never trigger()ed (skill §17)
+  const card = JSON.parse(fs.readFileSync(path.join(APP, '.homeycompose/flow/triggers/alarm_underperforming_panel_true.json'), 'utf8'));
+  t.ok(manifest.capabilities.includes(card.id.replace(/_true$/, '')), 'the trigger id is the capability id + _true');
+  const code = ['lib/panelPoller.js', 'drivers/panel/device.js', 'drivers/panel/driver.js'].map((f) => fs.readFileSync(path.join(APP, f), 'utf8')).join();
+  t.ok(!/getDeviceTriggerCard\(/.test(code), 'the app does not trigger it itself');
+
+  // the condition answers from the capability
+  let listener = null;
+  const flowDriver = Object.create(fixtures.app('drivers/panel/driver.js').prototype);
+  Object.assign(flowDriver, {
+    log() {},
+    homey: {
+      flow: {
+        getConditionCard: (id) => ({
+          registerRunListener: (fn) => {
+            if (id === 'alarm_underperforming_panel_is') listener = fn;
+          },
+        }),
+      },
+    },
+  });
+  await flowDriver.onInit();
+  const state = (value) => ({ device: { getCapabilityValue: (cap) => (cap === 'alarm_underperforming_panel' ? value : undefined) } });
+  t.ok(listener, 'the condition has a run listener');
+  t.eq(listener && listener(state(true)), true, 'true while underperforming');
+  t.eq(listener && listener(state(false)), false, 'false otherwise');
+  t.eq(listener && listener(state(null)), false, 'false without a value');
+
   // CSV: repeated header, empty and '-' cells
   const { latestPerObject, localIso } = fixtures.app('lib/tigoAggregate.js');
   const doc = latestPerObject(fixtures.get('aggregateMin').csv);
