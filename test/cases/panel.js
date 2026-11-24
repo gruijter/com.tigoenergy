@@ -92,7 +92,8 @@ module.exports = async (t) => {
   t.eq(devices[0].store.objectId, panels[0].object_id, 'store.objectId is the column id of data/aggregate');
   t.eq(devices[0].settings.label, String(panels[0].label), 'the panel label is a setting');
   t.ok(devices[0].settings.string, 'and its string');
-  t.eq(JSON.stringify(devices[0].capabilities), JSON.stringify(manifest.capabilities), 'paired with the final capabilities');
+  t.eq(JSON.stringify(devices[0].capabilities), JSON.stringify(driver.capabilityList(devices[0].store.apiSource)), 'paired with the final capabilities');
+  t.ok(!driver.capabilityList('v3').includes('measure_temperature_panel') && driver.capabilityList('mobile').includes('measure_temperature_panel'), "temperature only on the app's API");
 
   // one poll per system: 2 requests for all panels
   const calls = fixtures.routeHttps({ '/api/v3/data/aggregate': aggregateFor });
@@ -203,11 +204,11 @@ module.exports = async (t) => {
   t.eq(pair[1].store.apiSource, 'mobile', 'and the API');
   t.eq(elsewhere.settings.password, 'secret', 'a panel of another system keeps its own');
 
-  // a string of one paired panel has nothing to compare with
-  const alone = fixtures.makePanel({ objectId: 9, poller: judge });
-  const single = new Map([[alone, { todayKwh: 2 }]]);
-  await PanelPoller.prototype.compare.call(judge, {}, [alone], single, '2026-11-24');
-  t.eq(single.get(alone).efficiencyPct, null, 'one panel in a string: no efficiency');
+  // fewer than 3 paired panels in a string: nothing to compare with
+  const duo = [8, 9].map((objectId) => fixtures.makePanel({ objectId, poller: judge }));
+  const pairReadings = new Map(duo.map((device, i) => [device, { todayKwh: i + 1 }]));
+  await PanelPoller.prototype.compare.call(judge, {}, duo, pairReadings, '2026-11-24');
+  t.eq(pairReadings.get(duo[0]).efficiencyPct, null, 'two panels in a string: no efficiency');
 
   // a JSON answer to a CSV request is an error, not an empty dataset
   fixtures.routeHttps({ '/api/v3/data/aggregate': () => ({ status: 200, body: { message: 'Invalid range' } }) });

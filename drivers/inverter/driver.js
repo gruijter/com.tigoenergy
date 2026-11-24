@@ -29,10 +29,9 @@ module.exports = class MyDriver extends Homey.Driver {
     this.log('System driver has been initialized');
   }
 
-  /** The capabilities of a device on `source`: the app's API has no alerts. */
-  capabilityList(source) {
-    const caps = [...this.manifest.capabilities];
-    return source === 'mobile' ? caps.filter((cap) => cap !== 'alarm_problem') : caps;
+  /** The capabilities of a device on `source`: both APIs give all of them. */
+  capabilityList() {
+    return [...this.manifest.capabilities];
   }
 
   /** Login handler plus the subscription_notice view's question; `found()` holds the result. */

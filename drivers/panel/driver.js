@@ -45,11 +45,10 @@ module.exports = class PanelDriver extends InverterDriver {
     this.log('Panel driver has been initialized');
   }
 
-  /** The app's API gives no voltage, current or RSSI per panel (its third-party client, not verified). */
+  /** The official API gives no temperature per panel (seen live by M. Stranik's Tigo app). */
   capabilityList(source) {
     const caps = [...this.manifest.capabilities];
-    const none = ['measure_volt_panel', 'measure_amp_panel', 'measure_rssi_panel'];
-    return source === 'mobile' ? caps.filter((cap) => !none.includes(cap)) : caps;
+    return source === 'mobile' ? caps : caps.filter((cap) => cap !== 'measure_temperature_panel');
   }
 
   async onPair(session) {

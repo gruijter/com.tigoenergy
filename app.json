@@ -177,6 +177,54 @@
   "flow": {
     "triggers": [
       {
+        "title": {
+          "en": "Active faults changed",
+          "nl": "Actieve storingen zijn veranderd",
+          "de": "Aktive Störungen geändert",
+          "fr": "Défauts actifs modifiés",
+          "es": "Fallos activos cambiados",
+          "it": "Guasti attivi modificati",
+          "pl": "Aktywne usterki uległy zmianie",
+          "sv": "Aktiva fel ändrade",
+          "no": "Aktive feil endret",
+          "da": "Aktive fejl ændret",
+          "ru": "Активные неисправности изменились",
+          "ko": "활성 고장이 변경됨",
+          "ar": "تغيرت الأعطال النشطة"
+        },
+        "highlight": true,
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=inverter&capabilities=active_faults"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "active_faults",
+            "type": "string",
+            "title": {
+              "en": "Active faults",
+              "nl": "Actieve storingen",
+              "de": "Aktive Störungen",
+              "fr": "Défauts actifs",
+              "es": "Fallos activos",
+              "it": "Guasti attivi",
+              "pl": "Aktywne usterki",
+              "sv": "Aktiva fel",
+              "no": "Aktive feil",
+              "da": "Aktive fejl",
+              "ru": "Активные неисправности",
+              "ko": "활성 고장",
+              "ar": "الأعطال النشطة"
+            },
+            "example": "Grid lost"
+          }
+        ],
+        "id": "active_faults_changed"
+      },
+      {
         "id": "alarm_underperforming_panel_true",
         "title": {
           "en": "The panel is underperforming",
@@ -279,30 +327,16 @@
       },
       "class": "solarpanel",
       "capabilities": [
-        "meter_power",
         "measure_power",
+        "meter_power",
         "meter_power.today",
+        "meter_power.month",
+        "meter_power.year",
         "alarm_problem",
-        "alarm_connectivity"
+        "alarm_connectivity",
+        "active_faults"
       ],
       "capabilitiesOptions": {
-        "meter_power": {
-          "title": {
-            "en": "Solar energy (DC)",
-            "nl": "Zonopbrengst (DC)",
-            "da": "Solproduktion (DC)",
-            "de": "Solarertrag (DC)",
-            "es": "Producción solar (CC)",
-            "fr": "Production solaire (CC)",
-            "it": "Produzione solare (CC)",
-            "no": "Solproduksjon (DC)",
-            "sv": "Solproduktion (DC)",
-            "pl": "Uzysk słoneczny (DC)",
-            "ru": "Солнечная энергия (DC)",
-            "ko": "태양광 발전량 (DC)",
-            "ar": "الطاقة الشمسية (DC)"
-          }
-        },
         "measure_power": {
           "title": {
             "en": "Solar power (DC)",
@@ -320,6 +354,23 @@
             "ar": "القدرة الشمسية (DC)"
           }
         },
+        "meter_power": {
+          "title": {
+            "en": "Solar energy (DC)",
+            "nl": "Zonopbrengst (DC)",
+            "da": "Solproduktion (DC)",
+            "de": "Solarertrag (DC)",
+            "es": "Producción solar (CC)",
+            "fr": "Production solaire (CC)",
+            "it": "Produzione solare (CC)",
+            "no": "Solproduksjon (DC)",
+            "sv": "Solproduktion (DC)",
+            "pl": "Uzysk słoneczny (DC)",
+            "ru": "Солнечная энергия (DC)",
+            "ko": "태양광 발전량 (DC)",
+            "ar": "الطاقة الشمسية (DC)"
+          }
+        },
         "meter_power.today": {
           "title": {
             "en": "Solar energy today (DC)",
@@ -335,6 +386,40 @@
             "ru": "Энергия сегодня (DC)",
             "ko": "오늘 태양광 발전량 (DC)",
             "ar": "الطاقة اليوم (DC)"
+          }
+        },
+        "meter_power.month": {
+          "title": {
+            "en": "Solar energy this month (DC)",
+            "nl": "Opbrengst deze maand (DC)",
+            "da": "Produktion denne måned (DC)",
+            "de": "Solarertrag diesen Monat (DC)",
+            "es": "Producción de este mes (CC)",
+            "fr": "Production du mois (CC)",
+            "it": "Produzione di questo mese (CC)",
+            "no": "Produksjon denne måneden (DC)",
+            "sv": "Solproduktion denna månad (DC)",
+            "pl": "Uzysk w tym miesiącu (DC)",
+            "ru": "Энергия за этот месяц (DC)",
+            "ko": "이번 달 태양광 발전량 (DC)",
+            "ar": "الطاقة هذا الشهر (DC)"
+          }
+        },
+        "meter_power.year": {
+          "title": {
+            "en": "Solar energy this year (DC)",
+            "nl": "Opbrengst dit jaar (DC)",
+            "da": "Produktion i år (DC)",
+            "de": "Solarertrag dieses Jahr (DC)",
+            "es": "Producción de este año (CC)",
+            "fr": "Production de l'année (CC)",
+            "it": "Produzione di quest'anno (CC)",
+            "no": "Produksjon i år (DC)",
+            "sv": "Solproduktion i år (DC)",
+            "pl": "Uzysk w tym roku (DC)",
+            "ru": "Энергия за этот год (DC)",
+            "ko": "올해 태양광 발전량 (DC)",
+            "ar": "الطاقة هذا العام (DC)"
           }
         }
       },
@@ -579,6 +664,7 @@
         "panel_string",
         "measure_volt_panel",
         "measure_amp_panel",
+        "measure_temperature_panel",
         "measure_efficiency_panel",
         "alarm_underperforming_panel",
         "measure_rssi_panel"
@@ -886,6 +972,29 @@
     }
   ],
   "capabilities": {
+    "active_faults": {
+      "type": "string",
+      "title": {
+        "en": "Active faults",
+        "nl": "Actieve storingen",
+        "de": "Aktive Störungen",
+        "fr": "Défauts actifs",
+        "es": "Fallos activos",
+        "it": "Guasti attivi",
+        "da": "Aktive fejl",
+        "sv": "Aktiva fel",
+        "no": "Aktive feil",
+        "pl": "Aktywne usterki",
+        "ru": "Активные неисправности",
+        "ar": "الأعطال النشطة",
+        "ko": "활성 고장"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": false,
+      "icon": "./assets/active_faults.svg"
+    },
     "alarm_underperforming_panel": {
       "type": "boolean",
       "title": {
@@ -1070,6 +1179,60 @@
       "insights": true,
       "uiComponent": "sensor",
       "icon": "/assets/capabilities/measure_rssi_panel.svg"
+    },
+    "measure_temperature_panel": {
+      "type": "number",
+      "title": {
+        "en": "Temperature",
+        "nl": "Temperatuur",
+        "de": "Temperatur",
+        "fr": "Température",
+        "es": "Temperatura",
+        "it": "Temperatura",
+        "da": "Temperatur",
+        "sv": "Temperatur",
+        "no": "Temperatur",
+        "pl": "Temperatura",
+        "ru": "Температура",
+        "ar": "درجة الحرارة",
+        "ko": "온도"
+      },
+      "desc": {
+        "en": "Temperature of this panel in degrees Celsius (°C)",
+        "nl": "Temperatuur van dit paneel in graden Celsius (°C)",
+        "de": "Temperatur dieses Moduls in Grad Celsius (°C)",
+        "fr": "Température de ce panneau en degrés Celsius (°C)",
+        "es": "Temperatura de este panel en grados Celsius (°C)",
+        "it": "Temperatura di questo pannello in gradi Celsius (°C)",
+        "da": "Temperatur for dette panel i grader Celsius (°C)",
+        "sv": "Temperatur för den här panelen i grader Celsius (°C)",
+        "no": "Temperatur for dette panelet i grader Celsius (°C)",
+        "pl": "Temperatura tego panelu w stopniach Celsjusza (°C)",
+        "ru": "Температура этой панели в градусах Цельсия (°C)",
+        "ar": "درجة حرارة هذا اللوح بالدرجات المئوية (°C)",
+        "ko": "이 패널의 온도 (°C)"
+      },
+      "units": {
+        "en": "°C",
+        "nl": "°C",
+        "de": "°C",
+        "fr": "°C",
+        "es": "°C",
+        "it": "°C",
+        "da": "°C",
+        "sv": "°C",
+        "no": "°C",
+        "pl": "°C",
+        "ru": "°C",
+        "ar": "°C",
+        "ko": "°C"
+      },
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_temperature_panel.svg"
     },
     "measure_volt_panel": {
       "type": "number",

@@ -138,6 +138,34 @@ docStubs.aggregateMin = {
   csv: 'Datetime,1,2,3\n2014/09/23 00:06:23,23,23,23\n2014/09/23 00:06:24,23,23,23\nDatetime,1,2\n2014/09/23 00:06:28,23,23\n',
 };
 
+// alerts/system, example of the API V3 document p. 28-29 (message shortened)
+docStubs.alerts = {
+  alerts: [{
+    alert_id: 1,
+    added: '2018-08-01T09:09:05-07:00',
+    generated: '2018-08-01T09:08:20-07:00',
+    system_id: 1,
+    unique_id: 106,
+    title: 'Tigo Alert: String Shutdown',
+    message: 'String ID: String F',
+  }],
+};
+// data/combined at level day: one Wh total per day for the System object (id 1)
+docStubs.combined = { csv: 'DATETIME,1\n2017/01/01 00:00:00.000,1000\n2017/01/02 00:00:00.000,2000\n' };
+// The app's equipment states: shapes from M. Stranik's Tigo app (lib/parse.js there), not seen by us.
+docStubs.mobileEquipmentStatus = [
+  {
+    statusTime: '2026-08-28 09:00:00', createdTime: '2026-08-28 07:00:00', statusType: 'lowVoltage', statusCode: 1, equipment: { equipmentType: 'panel', equipmentSerial: 'P1' },
+  },
+  {
+    statusTime: '2026-08-28 10:00:00', createdTime: '2026-08-28 08:00:00', statusType: 'lowVoltage', statusCode: 0, equipment: { equipmentType: 'panel', equipmentSerial: 'P1' },
+  },
+  {
+    statusTime: '2026-08-28 10:05:00', createdTime: '2026-08-28 08:05:00', statusType: 'noCommunication', statusCode: 2, equipment: { equipmentType: 'unit', equipmentSerial: 'CCA-1' },
+  },
+];
+docStubs.mobileEventTypes = [{ type: 'noCommunication', title: 'No communication', equipmentType: 'unit' }];
+
 // error bodies seen live (zzz_docs/README.md)
 const errors = {
   unauthorized: {
@@ -279,6 +307,8 @@ const ROUTES = {
   '/api/v3/objects/system': 'objects',
   '/api/v3/sources/system': 'sources',
   '/api/v3/data/summary': 'summary',
+  '/api/v3/data/combined': 'combined',
+  '/api/v3/alerts/system': 'alerts',
 };
 
 const MOBILE_ROUTES = {
@@ -288,6 +318,8 @@ const MOBILE_ROUTES = {
   '/api/v4/equipments': 'mobileEquipments',
   '/api/v4/system/summary/summary': 'mobilePanelPower',
   '/api/v4/system/summary/aggenergy': 'mobilePanelEnergy',
+  '/api/v4/equipment-status/history': 'mobileEquipmentStatus',
+  '/api/v4/equipment-event-types': 'mobileEventTypes',
 };
 
 const MOBILE_HOST = 'mapi.tigoenergy.com';
@@ -327,6 +359,8 @@ fixtures.routeHttps = (overrides = {}) => {
     if (typeof answer === 'function') answer = answer(options);
     if (typeof answer === 'string') answer = fixtures.get(answer);
     if (answer === undefined) throw new Error(`No fixture route for ${options.path}`);
+    // a CSV capture is kept as { csv }
+    if (answer && typeof answer.csv === 'string') answer = { status: 200, contentType: 'text/csv', body: answer.csv };
     const { status, body, contentType } = answer && answer.status && answer.body !== undefined
       ? answer : { status: 200, body: answer };
     return {

@@ -29,15 +29,20 @@ const fakeDevice = (caps) => {
 };
 
 (async () => {
-  // paired before: the new capabilities are appended, nothing is removed
+  // paired before: brought to the manifest order
   const old = fakeDevice(['meter_power', 'measure_power']);
   assert.strictEqual(await DeviceMigrator.migrateCapabilities(old, manifest.capabilities, { settleMs: 0 }), true);
-  assert.deepStrictEqual(old.calls, ['+meter_power.today', '+alarm_problem', '+alarm_connectivity']);
+  assert.deepStrictEqual(old.getCapabilities(), manifest.capabilities);
 
-  // paired with 1.0.x: only alarm_connectivity is appended
-  const recent = fakeDevice(['meter_power', 'measure_power', 'meter_power.today', 'alarm_problem']);
+  // paired with 1.0.2: the new ones in their place, the tiles after them re-added in order
+  const recent = fakeDevice(['meter_power', 'measure_power', 'meter_power.today', 'alarm_problem', 'alarm_connectivity']);
   assert.strictEqual(await DeviceMigrator.migrateCapabilities(recent, manifest.capabilities, { settleMs: 0 }), true);
-  assert.deepStrictEqual(recent.calls, ['+alarm_connectivity']);
+  assert.deepStrictEqual(recent.getCapabilities(), manifest.capabilities);
+
+  // on the app's API with 1.0.2 (no alarm_problem then)
+  const app = fakeDevice(['meter_power', 'measure_power', 'meter_power.today', 'alarm_connectivity']);
+  assert.strictEqual(await DeviceMigrator.migrateCapabilities(app, manifest.capabilities, { settleMs: 0 }), true);
+  assert.deepStrictEqual(app.getCapabilities(), manifest.capabilities);
 
   // newly paired (driver.js passes the manifest list): no migration
   const fresh = fakeDevice([...manifest.capabilities]);

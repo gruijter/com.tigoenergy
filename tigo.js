@@ -38,6 +38,8 @@ const getObjectsEP = '/api/v3/objects/system';
 const getSourcesEP = '/api/v3/sources/system';
 const getStatusEP = '/api/v3/data/summary';
 const getAggregateEP = '/api/v3/data/aggregate';
+const getCombinedEP = '/api/v3/data/combined';
+const getAlertsEP = '/api/v3/alerts/system';
 
 // Represents a session to a Tigo system.
 class TigoClient {
@@ -160,6 +162,27 @@ class TigoClient {
     });
     if (objectIds && objectIds.length) query.set('object_ids', objectIds.join(','));
     return this._makeRequest(`${getAggregateEP}?${query}`, undefined, undefined, undefined, { csv: true });
+  }
+
+  /**
+   * One total per object as CSV (`DATETIME,<object_id>`); at level `day` Wh per day (API V3 document).
+   * A range over 14 days is refused (seen live by M. Stranik's Tigo app).
+   * @param {object} opts id, start, end (local ISO without zone), level, objectIds
+   * @returns {Promise<string>} the CSV text
+   */
+  async getCombined({
+    id, start, end, level = 'day', objectIds,
+  }) {
+    const query = new URLSearchParams({
+      system_id: id, start, end, level, object_ids: objectIds.join(','),
+    });
+    return this._makeRequest(`${getCombinedEP}?${query}`, undefined, undefined, undefined, { csv: true });
+  }
+
+  /** Tigo's alerts of a system since `startAdded` (ISO 8601): `{ alerts: [{ alert_id, added, title, message }] }` */
+  async getAlerts({ id, startAdded }) {
+    const query = new URLSearchParams({ system_id: id, start_added: startAdded });
+    return this._makeRequest(`${getAlertsEP}?${query}`);
   }
 
   async _makeRequest(actionPath, data, timeout, method, opts) {

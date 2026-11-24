@@ -115,7 +115,7 @@ async function stubs(t) {
   const [paired] = await session.handlers.list_devices();
   t.eq(paired.store.apiSource, 'mobile', "paired on the Tigo app's API");
   t.eq(paired.settings.systemId, String(fixtures.get('mobileSystems').systems[0].id), 'systemId is the app id');
-  t.ok(!paired.capabilities.includes('alarm_problem'), 'without alarm_problem (no alerts there)');
+  t.ok(paired.capabilities.includes('active_faults'), 'with active_faults (equipment states)');
   t.eq(JSON.stringify(paired.capabilities), JSON.stringify(driver.capabilityList('mobile')), 'paired with its final capabilities');
 
   // wrong password on both: the official API's error
@@ -183,8 +183,14 @@ async function stubs(t) {
   await stay.doPoll();
   t.eq(calls.filter((call) => call.path === '/api/v3/systems').length, checks, 'the official API is not asked again within a day');
 
-  // panels on the app's API: one equipment list, power per gateway, energy per day
-  calls = fixtures.routeHttps();
+  // panels on the app's API: one equipment list, power and the other fields per gateway, energy per day
+  const series = (options) => {
+    const temp = new URLSearchParams(options.path.split('?')[1]).get('temp');
+    if (temp === 'temp') return { status: 403, body: { message: 'Forbidden' } };
+    if (temp === 'vin') return { dataset: [{ order: [3, 4], data: [{ t: '10:30', d: [36.5, '-'] }] }] };
+    return fixtures.get('mobilePanelPower');
+  };
+  calls = fixtures.routeHttps({ 'mobile:/api/v4/system/summary/summary': series });
   const poller = fixtures.makePoller();
   const panels = [3, 4].map((objectId) => fixtures.makePanel({ objectId, poller }));
   panels.forEach((panel) => {
@@ -199,12 +205,17 @@ async function stubs(t) {
   });
   await poller.tick(at);
   t.ok(calls.every((call) => call.host === MAPI), "panels poll only the Tigo app's API");
-  t.eq(calls.filter((call) => call.path.startsWith('/api/v4/system/summary/summary')).length, 1, 'one power request per gateway');
+  const summaries = calls.filter((call) => call.path.startsWith('/api/v4/system/summary/summary'));
+  t.eq(summaries.filter((call) => call.path.includes('temp=pin')).length, 1, 'one power request per gateway');
+  t.eq(summaries.map((call) => new URLSearchParams(call.path.split('?')[1]).get('temp')).sort().join(), 'iin,pin,rssi,temp,vin', 'and one per other field');
   t.ok(calls.some((call) => call.path.includes('uid=CCA-1')), 'with the gateway serial');
   t.eq(panels[0].values.measure_watt_panel, 95, 'panel power (W)');
   t.eq(panels[1].values.measure_watt_panel, 110, 'the newest value of each panel');
   t.eq(panels[0].values.meter_kwh_panel_today, 1.2, "today's energy (Wh) in kWh");
-  t.eq(panels[0].values.measure_volt_panel, undefined, 'no voltage');
+  t.eq(panels[0].values.measure_volt_panel, 36.5, 'voltage from vin');
+  t.eq(panels[1].values.measure_volt_panel, null, 'a panel without a voltage in the last hour: cleared');
+  t.eq(panels[0].values.measure_temperature_panel, undefined, 'a refused field leaves its tile as it is');
+  t.eq(panels[0].values.measure_watt_panel, 95, 'and the power still comes');
   await poller.tick(at + 5 * 60 * 1000);
   t.eq(calls.filter((call) => call.path.startsWith('/api/v4/equipments')).length, 1, 'the equipment list is asked once');
   await poller.tick(at + 3 * 60 * 60 * 1000);

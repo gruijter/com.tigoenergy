@@ -59,6 +59,7 @@ module.exports = class PanelDevice extends Homey.Device {
       meter_kwh_panel_today: round(reading.todayKwh, 3),
       measure_volt_panel: round(reading.voltageV, 1),
       measure_amp_panel: round(reading.currentA, 2),
+      measure_temperature_panel: round(reading.tempC, 1),
       measure_rssi_panel: reading.rssi,
       measure_efficiency_panel: reading.efficiencyPct,
       alarm_underperforming_panel: reading.underperforming,

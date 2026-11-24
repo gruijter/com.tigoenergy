@@ -21,6 +21,7 @@
     "panel_string",
     "measure_volt_panel",
     "measure_amp_panel",
+    "measure_temperature_panel",
     "measure_efficiency_panel",
     "alarm_underperforming_panel",
     "measure_rssi_panel"
