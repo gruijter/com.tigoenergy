@@ -7,5 +7,8 @@
   },
   "1.0.2": {
     "en": "Removed unused flowcards"
+  },
+  "2.0.0": {
+    "en": "Added a device per solar panel, with power, energy, voltage, current, temperature and an underperforming alarm. Added support for accounts without EI Premium. Added month and year energy, active faults and a connection alarm. Minor other fixes and improvements."
   }
 }
