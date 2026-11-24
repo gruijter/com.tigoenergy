@@ -23,7 +23,8 @@ fixture, so they work on both.
 | `layout` | `GET /api/v3/systems/layout?id=` |
 | `objects` | `GET /api/v3/objects/system?system_id=` |
 | `sources` | `GET /api/v3/sources/system?system_id=` |
-| `summary` | `GET /api/v3/data/summary?system_id=` (the device poll) |
+| `summary` | `GET /api/v3/data/summary?system_id=` (the inverter poll) |
+| `aggregateMin`, `aggregateDay` | `GET /api/v3/data/aggregate?...&level=min|day` (the panel poll; CSV kept as `{ csv }`) |
 
 The login is never captured (it holds the token).
 
@@ -51,6 +52,7 @@ node test/from-logs.js report.txt --site my-house  # choose the site folder
 | `device.js` | `alarm_connectivity` after 24 h without new data (power cleared, device stays available), polling every 10 min after 30 min without new data, a 429 leaving the device available, `onUninit` storing the held-back lifetime reading. |
 | `repair.js` | A new login is stored and restarts the device; a login without the system is refused and changes nothing. |
 | `locales.js` | All 13 languages in every compose translation object, the same keys in every `locales/*.json`, a README per language. |
+| `panel.js` | Panel driver: own capabilities and `energy.excludedByDefault` (out of Homey Energy), icons present, the CSV parser (repeated header, empty and `-` cells), local start/end, one device per layout panel, one poll of 5 requests (Pin, Vin, Iin, RSSI per minute, Pin per day) for all panels of a system, yield vs the string's median, underperforming after 3 days under 85% (dark days not counted), 5/30-min cadence, no minute clears power, 402 vs 429, the Energy toggle not re-registering, separate captures. |
 | `capture.js` | Arm/claim, the client recording every endpoint but never the login, round trip through a timestamped report, truncation reported, redaction of address, coordinates and contacts. |
 
 ## Adding a case

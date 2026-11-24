@@ -21,12 +21,18 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 
 const Homey = require('homey');
 const capture = require('./lib/tigoCapture');
+const PanelPoller = require('./lib/panelPoller');
 
 module.exports = class MyApp extends Homey.App {
 
   async onInit() {
     capture.arm('app start', { force: true });
     // start time emitter and flow listeners
+    this.panelPoller = new PanelPoller({ homey: this.homey, log: (...args) => this.log(...args), error: (...args) => this.error(...args) });
+    this.pollPanels = () => {
+      this.panelPoller.tick().catch((error) => this.error(error));
+    };
+    this.homey.on('everyXminutes', this.pollPanels);
     this.everyXminutes(1);
     this.log('Tigo app has been initialized');
   }

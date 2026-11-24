@@ -1,0 +1,222 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Tigo System Information",
+      "nl": "Tigo Systeem Informatie",
+      "de": "Tigo-Systeminformationen",
+      "fr": "Informations du système Tigo",
+      "es": "Información del sistema Tigo",
+      "it": "Informazioni sul sistema Tigo",
+      "da": "Tigo-systeminformation",
+      "sv": "Tigo-systeminformation",
+      "no": "Tigo-systeminformasjon",
+      "pl": "Informacje o systemie Tigo",
+      "ru": "Информация о системе Tigo",
+      "ar": "معلومات نظام Tigo",
+      "ko": "Tigo 시스템 정보"
+    },
+    "children": [
+      {
+        "id": "systemId",
+        "type": "label",
+        "label": {
+          "en": "System ID",
+          "nl": "Systeem ID",
+          "de": "System-ID",
+          "fr": "ID du système",
+          "es": "ID del sistema",
+          "it": "ID del sistema",
+          "da": "System-ID",
+          "sv": "System-ID",
+          "no": "System-ID",
+          "pl": "ID systemu",
+          "ru": "ID системы",
+          "ar": "معرّف النظام",
+          "ko": "시스템 ID"
+        },
+        "value": ""
+      },
+      {
+        "id": "systemName",
+        "type": "label",
+        "label": {
+          "en": "System name",
+          "nl": "Systeem naam",
+          "de": "Systemname",
+          "fr": "Nom du système",
+          "es": "Nombre del sistema",
+          "it": "Nome del sistema",
+          "da": "Systemnavn",
+          "sv": "Systemnamn",
+          "no": "Systemnavn",
+          "pl": "Nazwa systemu",
+          "ru": "Название системы",
+          "ar": "اسم النظام",
+          "ko": "시스템 이름"
+        },
+        "value": ""
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Tigo panel",
+      "nl": "Tigo-paneel",
+      "de": "Tigo-Modul",
+      "fr": "Panneau Tigo",
+      "es": "Panel Tigo",
+      "it": "Pannello Tigo",
+      "da": "Tigo-panel",
+      "sv": "Tigo-panel",
+      "no": "Tigo-panel",
+      "pl": "Panel Tigo",
+      "ru": "Панель Tigo",
+      "ar": "لوح Tigo",
+      "ko": "Tigo 패널"
+    },
+    "children": [
+      {
+        "id": "label",
+        "type": "label",
+        "label": {
+          "en": "Panel",
+          "nl": "Paneel",
+          "de": "Modul",
+          "fr": "Panneau",
+          "es": "Panel",
+          "it": "Pannello",
+          "da": "Panel",
+          "sv": "Panel",
+          "no": "Panel",
+          "pl": "Panel",
+          "ru": "Панель",
+          "ar": "اللوح",
+          "ko": "패널"
+        },
+        "value": ""
+      },
+      {
+        "id": "string",
+        "type": "label",
+        "label": {
+          "en": "String",
+          "nl": "String",
+          "de": "String",
+          "fr": "Chaîne",
+          "es": "String",
+          "it": "Stringa",
+          "da": "Streng",
+          "sv": "Sträng",
+          "no": "Streng",
+          "pl": "String",
+          "ru": "Стринг",
+          "ar": "السلسلة",
+          "ko": "스트링"
+        },
+        "value": ""
+      },
+      {
+        "id": "serial",
+        "type": "label",
+        "label": {
+          "en": "Optimizer serial",
+          "nl": "Serienummer optimizer",
+          "de": "Seriennummer Optimierer",
+          "fr": "Numéro de série optimiseur",
+          "es": "Número de serie optimizador",
+          "it": "Numero di serie ottimizzatore",
+          "da": "Optimizer-serienummer",
+          "sv": "Optimerarens serienummer",
+          "no": "Optimalisatorens serienummer",
+          "pl": "Numer seryjny optymalizatora",
+          "ru": "Серийный номер оптимизатора",
+          "ar": "الرقم التسلسلي للمحسّن",
+          "ko": "옵티마이저 시리얼"
+        },
+        "value": ""
+      },
+      {
+        "id": "type",
+        "type": "label",
+        "label": {
+          "en": "Type",
+          "nl": "Type",
+          "de": "Typ",
+          "fr": "Type",
+          "es": "Tipo",
+          "it": "Tipo",
+          "da": "Type",
+          "sv": "Typ",
+          "no": "Type",
+          "pl": "Typ",
+          "ru": "Тип",
+          "ar": "النوع",
+          "ko": "유형"
+        },
+        "value": ""
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Tigo Settings",
+      "nl": "Tigo Instellingen",
+      "de": "Tigo-Einstellungen",
+      "fr": "Paramètres Tigo",
+      "es": "Ajustes de Tigo",
+      "it": "Impostazioni Tigo",
+      "da": "Tigo-indstillinger",
+      "sv": "Tigo-inställningar",
+      "no": "Tigo-innstillinger",
+      "pl": "Ustawienia Tigo",
+      "ru": "Настройки Tigo",
+      "ar": "إعدادات Tigo",
+      "ko": "Tigo 설정"
+    },
+    "children": [
+      {
+        "id": "username",
+        "type": "text",
+        "label": {
+          "en": "Username",
+          "nl": "Gebruikersnaam",
+          "de": "Benutzername",
+          "fr": "Nom d'utilisateur",
+          "es": "Nombre de usuario",
+          "it": "Nome utente",
+          "da": "Brugernavn",
+          "sv": "Användarnamn",
+          "no": "Brukernavn",
+          "pl": "Nazwa użytkownika",
+          "ru": "Имя пользователя",
+          "ar": "اسم المستخدم",
+          "ko": "사용자 이름"
+        },
+        "value": ""
+      },
+      {
+        "id": "password",
+        "type": "password",
+        "label": {
+          "en": "Password",
+          "nl": "Wachtwoord",
+          "de": "Passwort",
+          "fr": "Mot de passe",
+          "es": "Contraseña",
+          "it": "Password",
+          "da": "Adgangskode",
+          "sv": "Lösenord",
+          "no": "Passord",
+          "pl": "Hasło",
+          "ru": "Пароль",
+          "ar": "كلمة المرور",
+          "ko": "비밀번호"
+        },
+        "value": ""
+      }
+    ]
+  }
+]

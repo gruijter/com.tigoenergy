@@ -37,6 +37,7 @@ const getLayoutEP = '/api/v3/systems/layout';
 const getObjectsEP = '/api/v3/objects/system';
 const getSourcesEP = '/api/v3/sources/system';
 const getStatusEP = '/api/v3/data/summary';
+const getAggregateEP = '/api/v3/data/aggregate';
 
 // Represents a session to a Tigo system.
 class TigoClient {
@@ -143,10 +144,26 @@ class TigoClient {
   }
 
   /** A request; during a rate-limit cooldown none is sent, after a 401 it logs in again once. */
-  async _makeRequest(actionPath, data, timeout, method) {
+  /**
+   * Per-panel data as CSV (`Datetime,<object_id>,...`; the header can repeat with other columns).
+   * Pin is W per minute at level `min`, Wh per day at level `day` (API V3 document).
+   * @param {object} opts id, start, end (local ISO without zone), level, param, objectIds
+   * @returns {Promise<string>} the CSV text
+   */
+  async getAggregate({
+    id, start, end, level = 'min', param = 'Pin', objectIds,
+  }) {
+    const query = new URLSearchParams({
+      system_id: id, start, end, level, param, header: 'id',
+    });
+    if (objectIds && objectIds.length) query.set('object_ids', objectIds.join(','));
+    return this._makeRequest(`${getAggregateEP}?${query}`, undefined, undefined, undefined, { csv: true });
+  }
+
+  async _makeRequest(actionPath, data, timeout, method, opts) {
     if (Date.now() < this.rateLimitedUntil) throw this._error(this.translate('errors.rateLimit', 'Too many requests'), 429);
     try {
-      return await this._request(actionPath, data, timeout, method);
+      return await this._request(actionPath, data, timeout, method, opts);
     } catch (error) {
       if (error.statusCode === 429) {
         const retryAfter = Number(error.retryAfter) * 1000;
@@ -154,7 +171,7 @@ class TigoClient {
       }
       if (error.statusCode !== 401 || actionPath === loginEP || !this.password) throw error;
       await this.login();
-      return this._request(actionPath, data, timeout, method);
+      return this._request(actionPath, data, timeout, method, opts);
     }
   }
 
@@ -165,7 +182,7 @@ class TigoClient {
     return error;
   }
 
-  async _request(actionPath, data, timeout, method) {
+  async _request(actionPath, data, timeout, method, { csv = false } = {}) {
     try {
       const postData = JSON.stringify(data);
       const headers = { };
@@ -196,6 +213,10 @@ class TigoClient {
           throw this._error(msg, result.statusCode);
         }
         throw this._error(`${this.translate('errors.httpFailed', 'HTTP request failed')}. ${this.lastResponse}`, result.statusCode);
+      }
+      if (csv && !/application\/json/.test(contentType)) {
+        capture.record(actionPath, { csv: result.body }, this.log);
+        return result.body;
       }
       if (!/application\/json/.test(contentType)) {
         throw Error(`Expected JSON but received ${contentType}: ${result.body}`);

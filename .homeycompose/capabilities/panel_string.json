@@ -1,0 +1,38 @@
+{
+  "type": "string",
+  "title": {
+    "en": "String",
+    "nl": "String",
+    "de": "String",
+    "fr": "Chaîne",
+    "es": "String",
+    "it": "Stringa",
+    "da": "Streng",
+    "sv": "Sträng",
+    "no": "Streng",
+    "pl": "String",
+    "ru": "Стринг",
+    "ar": "السلسلة",
+    "ko": "스트링"
+  },
+  "desc": {
+    "en": "The string this panel is in",
+    "nl": "De string waarin dit paneel zit",
+    "de": "Der String dieses Moduls",
+    "fr": "La chaîne de ce panneau",
+    "es": "El string de este panel",
+    "it": "La stringa di questo pannello",
+    "da": "Strengen dette panel sidder i",
+    "sv": "Strängen som panelen sitter i",
+    "no": "Strengen dette panelet sitter i",
+    "pl": "String, w którym jest ten panel",
+    "ru": "Стринг этой панели",
+    "ar": "السلسلة التي يتبعها هذا اللوح",
+    "ko": "이 패널이 속한 스트링"
+  },
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capabilities/panel_string.svg"
+}

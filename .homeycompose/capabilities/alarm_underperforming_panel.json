@@ -1,0 +1,38 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Underperforming",
+    "nl": "Presteert te laag",
+    "de": "Leistet zu wenig",
+    "fr": "Sous-performant",
+    "es": "Bajo rendimiento",
+    "it": "Rende poco",
+    "da": "Yder for lidt",
+    "sv": "Presterar för lite",
+    "no": "Yter for lite",
+    "pl": "Za niska wydajność",
+    "ru": "Низкая выработка",
+    "ar": "أداء منخفض",
+    "ko": "성능 저하"
+  },
+  "desc": {
+    "en": "On when this panel yields clearly less than its string for several days",
+    "nl": "Aan als dit paneel meerdere dagen duidelijk minder opbrengt dan de string",
+    "de": "An, wenn dieses Modul mehrere Tage deutlich weniger liefert als der String",
+    "fr": "Activé quand ce panneau produit nettement moins que sa chaîne pendant plusieurs jours",
+    "es": "Activado cuando este panel produce claramente menos que su string durante varios días",
+    "it": "Attivo quando questo pannello produce molto meno della stringa per più giorni",
+    "da": "Til når dette panel i flere dage producerer klart mindre end strengen",
+    "sv": "På när panelen i flera dagar producerar klart mindre än strängen",
+    "no": "På når dette panelet i flere dager produserer klart mindre enn strengen",
+    "pl": "Włączone, gdy panel przez kilka dni daje wyraźnie mniej niż string",
+    "ru": "Включено, если панель несколько дней вырабатывает заметно меньше стринга",
+    "ar": "يعمل عندما ينتج هذا اللوح أقل بوضوح من سلسلته لعدة أيام",
+    "ko": "이 패널이 며칠 동안 스트링보다 확연히 적게 발전하면 켜짐"
+  },
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "uiComponent": "sensor",
+  "icon": "/assets/capabilities/alarm_underperforming_panel.svg"
+}

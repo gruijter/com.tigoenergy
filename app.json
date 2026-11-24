@@ -466,6 +466,718 @@
           ]
         }
       ]
+    },
+    {
+      "name": {
+        "en": "Solar panel",
+        "nl": "Zonnepaneel",
+        "de": "Solarmodul",
+        "fr": "Panneau solaire",
+        "es": "Panel solar",
+        "it": "Pannello solare",
+        "da": "Solpanel",
+        "sv": "Solpanel",
+        "no": "Solcellepanel",
+        "pl": "Panel słoneczny",
+        "ru": "Солнечная панель",
+        "ar": "لوح شمسي",
+        "ko": "태양광 패널"
+      },
+      "class": "solarpanel",
+      "capabilities": [
+        "measure_watt_panel",
+        "meter_kwh_panel_today",
+        "panel_string",
+        "measure_volt_panel",
+        "measure_amp_panel",
+        "measure_efficiency_panel",
+        "alarm_underperforming_panel",
+        "measure_rssi_panel"
+      ],
+      "energy": {
+        "excludedByDefault": true
+      },
+      "platforms": [
+        "local",
+        "cloud"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/panel/assets/images/small.png",
+        "large": "/drivers/panel/assets/images/large.png",
+        "xlarge": "/drivers/panel/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../assets/images/small.png",
+            "title": {
+              "en": "Add the panels of your Tigo system",
+              "nl": "Voeg de panelen van je Tigo-systeem toe",
+              "de": "Füge die Module deines Tigo-Systems hinzu",
+              "fr": "Ajoutez les panneaux de votre système Tigo",
+              "es": "Añade los paneles de tu sistema Tigo",
+              "it": "Aggiungi i pannelli del tuo impianto Tigo",
+              "da": "Tilføj panelerne i dit Tigo-anlæg",
+              "sv": "Lägg till panelerna i ditt Tigo-system",
+              "no": "Legg til panelene i Tigo-anlegget ditt",
+              "pl": "Dodaj panele swojego systemu Tigo",
+              "ru": "Добавьте панели вашей системы Tigo",
+              "ar": "أضف ألواح نظام Tigo الخاص بك",
+              "ko": "Tigo 시스템의 패널을 추가하세요"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../assets/images/small.png",
+            "title": {
+              "en": "Enter your Tigo login",
+              "nl": "Vul je Tigo-login in",
+              "de": "Gib deine Tigo-Anmeldedaten ein",
+              "fr": "Saisissez vos identifiants Tigo",
+              "es": "Introduce tus datos de acceso de Tigo",
+              "it": "Inserisci le tue credenziali Tigo",
+              "da": "Indtast dit Tigo-login",
+              "sv": "Ange din Tigo-inloggning",
+              "no": "Skriv inn Tigo-påloggingen din",
+              "pl": "Wpisz swoje dane logowania Tigo",
+              "ru": "Введите данные для входа в Tigo",
+              "ar": "أدخل بيانات تسجيل الدخول إلى Tigo",
+              "ko": "Tigo 로그인 정보를 입력하세요"
+            }
+          }
+        }
+      ],
+      "id": "panel",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Tigo System Information",
+            "nl": "Tigo Systeem Informatie",
+            "de": "Tigo-Systeminformationen",
+            "fr": "Informations du système Tigo",
+            "es": "Información del sistema Tigo",
+            "it": "Informazioni sul sistema Tigo",
+            "da": "Tigo-systeminformation",
+            "sv": "Tigo-systeminformation",
+            "no": "Tigo-systeminformasjon",
+            "pl": "Informacje o systemie Tigo",
+            "ru": "Информация о системе Tigo",
+            "ar": "معلومات نظام Tigo",
+            "ko": "Tigo 시스템 정보"
+          },
+          "children": [
+            {
+              "id": "systemId",
+              "type": "label",
+              "label": {
+                "en": "System ID",
+                "nl": "Systeem ID",
+                "de": "System-ID",
+                "fr": "ID du système",
+                "es": "ID del sistema",
+                "it": "ID del sistema",
+                "da": "System-ID",
+                "sv": "System-ID",
+                "no": "System-ID",
+                "pl": "ID systemu",
+                "ru": "ID системы",
+                "ar": "معرّف النظام",
+                "ko": "시스템 ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "systemName",
+              "type": "label",
+              "label": {
+                "en": "System name",
+                "nl": "Systeem naam",
+                "de": "Systemname",
+                "fr": "Nom du système",
+                "es": "Nombre del sistema",
+                "it": "Nome del sistema",
+                "da": "Systemnavn",
+                "sv": "Systemnamn",
+                "no": "Systemnavn",
+                "pl": "Nazwa systemu",
+                "ru": "Название системы",
+                "ar": "اسم النظام",
+                "ko": "시스템 이름"
+              },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Tigo panel",
+            "nl": "Tigo-paneel",
+            "de": "Tigo-Modul",
+            "fr": "Panneau Tigo",
+            "es": "Panel Tigo",
+            "it": "Pannello Tigo",
+            "da": "Tigo-panel",
+            "sv": "Tigo-panel",
+            "no": "Tigo-panel",
+            "pl": "Panel Tigo",
+            "ru": "Панель Tigo",
+            "ar": "لوح Tigo",
+            "ko": "Tigo 패널"
+          },
+          "children": [
+            {
+              "id": "label",
+              "type": "label",
+              "label": {
+                "en": "Panel",
+                "nl": "Paneel",
+                "de": "Modul",
+                "fr": "Panneau",
+                "es": "Panel",
+                "it": "Pannello",
+                "da": "Panel",
+                "sv": "Panel",
+                "no": "Panel",
+                "pl": "Panel",
+                "ru": "Панель",
+                "ar": "اللوح",
+                "ko": "패널"
+              },
+              "value": ""
+            },
+            {
+              "id": "string",
+              "type": "label",
+              "label": {
+                "en": "String",
+                "nl": "String",
+                "de": "String",
+                "fr": "Chaîne",
+                "es": "String",
+                "it": "Stringa",
+                "da": "Streng",
+                "sv": "Sträng",
+                "no": "Streng",
+                "pl": "String",
+                "ru": "Стринг",
+                "ar": "السلسلة",
+                "ko": "스트링"
+              },
+              "value": ""
+            },
+            {
+              "id": "serial",
+              "type": "label",
+              "label": {
+                "en": "Optimizer serial",
+                "nl": "Serienummer optimizer",
+                "de": "Seriennummer Optimierer",
+                "fr": "Numéro de série optimiseur",
+                "es": "Número de serie optimizador",
+                "it": "Numero di serie ottimizzatore",
+                "da": "Optimizer-serienummer",
+                "sv": "Optimerarens serienummer",
+                "no": "Optimalisatorens serienummer",
+                "pl": "Numer seryjny optymalizatora",
+                "ru": "Серийный номер оптимизатора",
+                "ar": "الرقم التسلسلي للمحسّن",
+                "ko": "옵티마이저 시리얼"
+              },
+              "value": ""
+            },
+            {
+              "id": "type",
+              "type": "label",
+              "label": {
+                "en": "Type",
+                "nl": "Type",
+                "de": "Typ",
+                "fr": "Type",
+                "es": "Tipo",
+                "it": "Tipo",
+                "da": "Type",
+                "sv": "Typ",
+                "no": "Type",
+                "pl": "Typ",
+                "ru": "Тип",
+                "ar": "النوع",
+                "ko": "유형"
+              },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Tigo Settings",
+            "nl": "Tigo Instellingen",
+            "de": "Tigo-Einstellungen",
+            "fr": "Paramètres Tigo",
+            "es": "Ajustes de Tigo",
+            "it": "Impostazioni Tigo",
+            "da": "Tigo-indstillinger",
+            "sv": "Tigo-inställningar",
+            "no": "Tigo-innstillinger",
+            "pl": "Ustawienia Tigo",
+            "ru": "Настройки Tigo",
+            "ar": "إعدادات Tigo",
+            "ko": "Tigo 설정"
+          },
+          "children": [
+            {
+              "id": "username",
+              "type": "text",
+              "label": {
+                "en": "Username",
+                "nl": "Gebruikersnaam",
+                "de": "Benutzername",
+                "fr": "Nom d'utilisateur",
+                "es": "Nombre de usuario",
+                "it": "Nome utente",
+                "da": "Brugernavn",
+                "sv": "Användarnamn",
+                "no": "Brukernavn",
+                "pl": "Nazwa użytkownika",
+                "ru": "Имя пользователя",
+                "ar": "اسم المستخدم",
+                "ko": "사용자 이름"
+              },
+              "value": ""
+            },
+            {
+              "id": "password",
+              "type": "password",
+              "label": {
+                "en": "Password",
+                "nl": "Wachtwoord",
+                "de": "Passwort",
+                "fr": "Mot de passe",
+                "es": "Contraseña",
+                "it": "Password",
+                "da": "Adgangskode",
+                "sv": "Lösenord",
+                "no": "Passord",
+                "pl": "Hasło",
+                "ru": "Пароль",
+                "ar": "كلمة المرور",
+                "ko": "비밀번호"
+              },
+              "value": ""
+            }
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "capabilities": {
+    "alarm_underperforming_panel": {
+      "type": "boolean",
+      "title": {
+        "en": "Underperforming",
+        "nl": "Presteert te laag",
+        "de": "Leistet zu wenig",
+        "fr": "Sous-performant",
+        "es": "Bajo rendimiento",
+        "it": "Rende poco",
+        "da": "Yder for lidt",
+        "sv": "Presterar för lite",
+        "no": "Yter for lite",
+        "pl": "Za niska wydajność",
+        "ru": "Низкая выработка",
+        "ar": "أداء منخفض",
+        "ko": "성능 저하"
+      },
+      "desc": {
+        "en": "On when this panel yields clearly less than its string for several days",
+        "nl": "Aan als dit paneel meerdere dagen duidelijk minder opbrengt dan de string",
+        "de": "An, wenn dieses Modul mehrere Tage deutlich weniger liefert als der String",
+        "fr": "Activé quand ce panneau produit nettement moins que sa chaîne pendant plusieurs jours",
+        "es": "Activado cuando este panel produce claramente menos que su string durante varios días",
+        "it": "Attivo quando questo pannello produce molto meno della stringa per più giorni",
+        "da": "Til når dette panel i flere dage producerer klart mindre end strengen",
+        "sv": "På när panelen i flera dagar producerar klart mindre än strängen",
+        "no": "På når dette panelet i flere dager produserer klart mindre enn strengen",
+        "pl": "Włączone, gdy panel przez kilka dni daje wyraźnie mniej niż string",
+        "ru": "Включено, если панель несколько дней вырабатывает заметно меньше стринга",
+        "ar": "يعمل عندما ينتج هذا اللوح أقل بوضوح من سلسلته لعدة أيام",
+        "ko": "이 패널이 며칠 동안 스트링보다 확연히 적게 발전하면 켜짐"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/alarm_underperforming_panel.svg"
+    },
+    "measure_amp_panel": {
+      "type": "number",
+      "title": {
+        "en": "Current",
+        "nl": "Stroom",
+        "de": "Strom",
+        "fr": "Courant",
+        "es": "Corriente",
+        "it": "Corrente",
+        "da": "Strøm",
+        "sv": "Ström",
+        "no": "Strøm",
+        "pl": "Prąd",
+        "ru": "Ток",
+        "ar": "التيار",
+        "ko": "전류"
+      },
+      "desc": {
+        "en": "Current of this panel in ampere (A)",
+        "nl": "Stroom van dit paneel in ampère (A)",
+        "de": "Strom dieses Moduls in Ampere (A)",
+        "fr": "Courant de ce panneau en ampères (A)",
+        "es": "Corriente de este panel en amperios (A)",
+        "it": "Corrente di questo pannello in ampere (A)",
+        "da": "Strøm for dette panel i ampere (A)",
+        "sv": "Ström för den här panelen i ampere (A)",
+        "no": "Strøm for dette panelet i ampere (A)",
+        "pl": "Prąd tego panelu w amperach (A)",
+        "ru": "Ток этой панели в амперах (А)",
+        "ar": "تيار هذا اللوح بالأمبير (A)",
+        "ko": "이 패널의 전류 (A)"
+      },
+      "units": {
+        "en": "A",
+        "nl": "A",
+        "de": "A",
+        "fr": "A",
+        "es": "A",
+        "it": "A",
+        "da": "A",
+        "sv": "A",
+        "no": "A",
+        "pl": "A",
+        "ru": "A",
+        "ar": "A",
+        "ko": "A"
+      },
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_amp_panel.svg"
+    },
+    "measure_efficiency_panel": {
+      "type": "number",
+      "title": {
+        "en": "Yield vs string",
+        "nl": "Opbrengst t.o.v. string",
+        "de": "Ertrag ggü. String",
+        "fr": "Production vs chaîne",
+        "es": "Producción vs string",
+        "it": "Produzione vs stringa",
+        "da": "Produktion ift. streng",
+        "sv": "Produktion mot sträng",
+        "no": "Produksjon mot streng",
+        "pl": "Uzysk wobec stringu",
+        "ru": "Выработка к стрингу",
+        "ar": "الإنتاج مقابل السلسلة",
+        "ko": "스트링 대비 발전량"
+      },
+      "desc": {
+        "en": "Today's yield compared with the middle panel of its string",
+        "nl": "Opbrengst van vandaag vergeleken met het middelste paneel van de string",
+        "de": "Heutiger Ertrag im Vergleich zum mittleren Modul des Strings",
+        "fr": "Production du jour comparée au panneau médian de la chaîne",
+        "es": "Producción de hoy comparada con el panel medio del string",
+        "it": "Produzione di oggi rispetto al pannello medio della stringa",
+        "da": "Dagens produktion sammenlignet med det midterste panel i strengen",
+        "sv": "Dagens produktion jämfört med strängens mittersta panel",
+        "no": "Dagens produksjon sammenlignet med det midterste panelet i strengen",
+        "pl": "Dzisiejszy uzysk w porównaniu ze środkowym panelem stringu",
+        "ru": "Выработка за сегодня по сравнению со средней панелью стринга",
+        "ar": "إنتاج اليوم مقارنة باللوح الأوسط في السلسلة",
+        "ko": "스트링의 중간 패널 대비 오늘 발전량"
+      },
+      "units": {
+        "en": "%",
+        "nl": "%",
+        "de": "%",
+        "fr": "%",
+        "es": "%",
+        "it": "%",
+        "da": "%",
+        "sv": "%",
+        "no": "%",
+        "pl": "%",
+        "ru": "%",
+        "ar": "%",
+        "ko": "%"
+      },
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_efficiency_panel.svg"
+    },
+    "measure_rssi_panel": {
+      "type": "number",
+      "title": {
+        "en": "Signal (RSSI)",
+        "nl": "Signaal (RSSI)",
+        "de": "Signal (RSSI)",
+        "fr": "Signal (RSSI)",
+        "es": "Señal (RSSI)",
+        "it": "Segnale (RSSI)",
+        "da": "Signal (RSSI)",
+        "sv": "Signal (RSSI)",
+        "no": "Signal (RSSI)",
+        "pl": "Sygnał (RSSI)",
+        "ru": "Сигнал (RSSI)",
+        "ar": "الإشارة (RSSI)",
+        "ko": "신호 (RSSI)"
+      },
+      "desc": {
+        "en": "Radio signal of the optimizer as reported by Tigo",
+        "nl": "Radiosignaal van de optimizer zoals Tigo het meldt",
+        "de": "Funksignal des Optimierers laut Tigo",
+        "fr": "Signal radio de l'optimiseur selon Tigo",
+        "es": "Señal de radio del optimizador según Tigo",
+        "it": "Segnale radio dell'ottimizzatore secondo Tigo",
+        "da": "Optimizerens radiosignal ifølge Tigo",
+        "sv": "Optimerarens radiosignal enligt Tigo",
+        "no": "Optimalisatorens radiosignal ifølge Tigo",
+        "pl": "Sygnał radiowy optymalizatora według Tigo",
+        "ru": "Радиосигнал оптимизатора по данным Tigo",
+        "ar": "إشارة الراديو للمحسّن حسب Tigo",
+        "ko": "Tigo가 보고한 옵티마이저 무선 신호"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_rssi_panel.svg"
+    },
+    "measure_volt_panel": {
+      "type": "number",
+      "title": {
+        "en": "Voltage",
+        "nl": "Spanning",
+        "de": "Spannung",
+        "fr": "Tension",
+        "es": "Tensión",
+        "it": "Tensione",
+        "da": "Spænding",
+        "sv": "Spänning",
+        "no": "Spenning",
+        "pl": "Napięcie",
+        "ru": "Напряжение",
+        "ar": "الجهد",
+        "ko": "전압"
+      },
+      "desc": {
+        "en": "Voltage of this panel in volt (V)",
+        "nl": "Spanning van dit paneel in volt (V)",
+        "de": "Spannung dieses Moduls in Volt (V)",
+        "fr": "Tension de ce panneau en volts (V)",
+        "es": "Tensión de este panel en voltios (V)",
+        "it": "Tensione di questo pannello in volt (V)",
+        "da": "Spænding for dette panel i volt (V)",
+        "sv": "Spänning för den här panelen i volt (V)",
+        "no": "Spenning for dette panelet i volt (V)",
+        "pl": "Napięcie tego panelu w woltach (V)",
+        "ru": "Напряжение этой панели в вольтах (В)",
+        "ar": "جهد هذا اللوح بالفولت (V)",
+        "ko": "이 패널의 전압 (V)"
+      },
+      "units": {
+        "en": "V",
+        "nl": "V",
+        "de": "V",
+        "fr": "V",
+        "es": "V",
+        "it": "V",
+        "da": "V",
+        "sv": "V",
+        "no": "V",
+        "pl": "V",
+        "ru": "V",
+        "ar": "V",
+        "ko": "V"
+      },
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_volt_panel.svg"
+    },
+    "measure_watt_panel": {
+      "type": "number",
+      "title": {
+        "en": "Panel power",
+        "nl": "Paneelvermogen",
+        "de": "Modulleistung",
+        "fr": "Puissance du panneau",
+        "es": "Potencia del panel",
+        "it": "Potenza del pannello",
+        "da": "Paneleffekt",
+        "sv": "Paneleffekt",
+        "no": "Paneleffekt",
+        "pl": "Moc panelu",
+        "ru": "Мощность панели",
+        "ar": "قدرة اللوح",
+        "ko": "패널 전력"
+      },
+      "desc": {
+        "en": "Power of this panel in watt (W)",
+        "nl": "Vermogen van dit paneel in watt (W)",
+        "de": "Leistung dieses Moduls in Watt (W)",
+        "fr": "Puissance de ce panneau en watts (W)",
+        "es": "Potencia de este panel en vatios (W)",
+        "it": "Potenza di questo pannello in watt (W)",
+        "da": "Effekt for dette panel i watt (W)",
+        "sv": "Effekt för den här panelen i watt (W)",
+        "no": "Effekt for dette panelet i watt (W)",
+        "pl": "Moc tego panelu w watach (W)",
+        "ru": "Мощность этой панели в ваттах (Вт)",
+        "ar": "قدرة هذا اللوح بالواط (W)",
+        "ko": "이 패널의 전력 (W)"
+      },
+      "units": {
+        "en": "W",
+        "nl": "W",
+        "de": "W",
+        "fr": "W",
+        "es": "W",
+        "it": "W",
+        "da": "W",
+        "sv": "W",
+        "no": "W",
+        "pl": "W",
+        "ru": "W",
+        "ar": "W",
+        "ko": "W"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_watt_panel.svg"
+    },
+    "meter_kwh_panel_today": {
+      "type": "number",
+      "title": {
+        "en": "Panel energy today",
+        "nl": "Paneelopbrengst vandaag",
+        "de": "Modulertrag heute",
+        "fr": "Production du panneau aujourd'hui",
+        "es": "Producción del panel hoy",
+        "it": "Produzione del pannello oggi",
+        "da": "Panelproduktion i dag",
+        "sv": "Panelproduktion idag",
+        "no": "Panelproduksjon i dag",
+        "pl": "Uzysk panelu dziś",
+        "ru": "Выработка панели сегодня",
+        "ar": "إنتاج اللوح اليوم",
+        "ko": "오늘 패널 발전량"
+      },
+      "desc": {
+        "en": "Energy of this panel today in kWh",
+        "nl": "Opbrengst van dit paneel vandaag in kWh",
+        "de": "Ertrag dieses Moduls heute in kWh",
+        "fr": "Production de ce panneau aujourd'hui en kWh",
+        "es": "Producción de este panel hoy en kWh",
+        "it": "Produzione di questo pannello oggi in kWh",
+        "da": "Produktion for dette panel i dag i kWh",
+        "sv": "Produktion för den här panelen idag i kWh",
+        "no": "Produksjon for dette panelet i dag i kWh",
+        "pl": "Uzysk tego panelu dziś w kWh",
+        "ru": "Выработка этой панели сегодня в кВт·ч",
+        "ar": "إنتاج هذا اللوح اليوم بالكيلوواط ساعة",
+        "ko": "이 패널의 오늘 발전량 (kWh)"
+      },
+      "units": {
+        "en": "kWh",
+        "nl": "kWh",
+        "de": "kWh",
+        "fr": "kWh",
+        "es": "kWh",
+        "it": "kWh",
+        "da": "kWh",
+        "sv": "kWh",
+        "no": "kWh",
+        "pl": "kWh",
+        "ru": "kWh",
+        "ar": "kWh",
+        "ko": "kWh"
+      },
+      "decimals": 3,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/meter_kwh_panel_today.svg"
+    },
+    "panel_string": {
+      "type": "string",
+      "title": {
+        "en": "String",
+        "nl": "String",
+        "de": "String",
+        "fr": "Chaîne",
+        "es": "String",
+        "it": "Stringa",
+        "da": "Streng",
+        "sv": "Sträng",
+        "no": "Streng",
+        "pl": "String",
+        "ru": "Стринг",
+        "ar": "السلسلة",
+        "ko": "스트링"
+      },
+      "desc": {
+        "en": "The string this panel is in",
+        "nl": "De string waarin dit paneel zit",
+        "de": "Der String dieses Moduls",
+        "fr": "La chaîne de ce panneau",
+        "es": "El string de este panel",
+        "it": "La stringa di questo pannello",
+        "da": "Strengen dette panel sidder i",
+        "sv": "Strängen som panelen sitter i",
+        "no": "Strengen dette panelet sitter i",
+        "pl": "String, w którym jest ten panel",
+        "ru": "Стринг этой панели",
+        "ar": "السلسلة التي يتبعها هذا اللوح",
+        "ko": "이 패널이 속한 스트링"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/panel_string.svg"
+    }
+  }
 }

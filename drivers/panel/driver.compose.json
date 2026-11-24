@@ -1,0 +1,102 @@
+{
+  "name": {
+    "en": "Solar panel",
+    "nl": "Zonnepaneel",
+    "de": "Solarmodul",
+    "fr": "Panneau solaire",
+    "es": "Panel solar",
+    "it": "Pannello solare",
+    "da": "Solpanel",
+    "sv": "Solpanel",
+    "no": "Solcellepanel",
+    "pl": "Panel słoneczny",
+    "ru": "Солнечная панель",
+    "ar": "لوح شمسي",
+    "ko": "태양광 패널"
+  },
+  "class": "solarpanel",
+  "capabilities": [
+    "measure_watt_panel",
+    "meter_kwh_panel_today",
+    "panel_string",
+    "measure_volt_panel",
+    "measure_amp_panel",
+    "measure_efficiency_panel",
+    "alarm_underperforming_panel",
+    "measure_rssi_panel"
+  ],
+  "energy": {
+    "excludedByDefault": true
+  },
+  "platforms": [
+    "local",
+    "cloud"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "options": {
+        "logo": "../assets/images/small.png",
+        "title": {
+          "en": "Add the panels of your Tigo system",
+          "nl": "Voeg de panelen van je Tigo-systeem toe",
+          "de": "Füge die Module deines Tigo-Systems hinzu",
+          "fr": "Ajoutez les panneaux de votre système Tigo",
+          "es": "Añade los paneles de tu sistema Tigo",
+          "it": "Aggiungi i pannelli del tuo impianto Tigo",
+          "da": "Tilføj panelerne i dit Tigo-anlæg",
+          "sv": "Lägg till panelerna i ditt Tigo-system",
+          "no": "Legg til panelene i Tigo-anlegget ditt",
+          "pl": "Dodaj panele swojego systemu Tigo",
+          "ru": "Добавьте панели вашей системы Tigo",
+          "ar": "أضف ألواح نظام Tigo الخاص بك",
+          "ko": "Tigo 시스템의 패널을 추가하세요"
+        }
+      }
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "repair": [
+    {
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "options": {
+        "logo": "../assets/images/small.png",
+        "title": {
+          "en": "Enter your Tigo login",
+          "nl": "Vul je Tigo-login in",
+          "de": "Gib deine Tigo-Anmeldedaten ein",
+          "fr": "Saisissez vos identifiants Tigo",
+          "es": "Introduce tus datos de acceso de Tigo",
+          "it": "Inserisci le tue credenziali Tigo",
+          "da": "Indtast dit Tigo-login",
+          "sv": "Ange din Tigo-inloggning",
+          "no": "Skriv inn Tigo-påloggingen din",
+          "pl": "Wpisz swoje dane logowania Tigo",
+          "ru": "Введите данные для входа в Tigo",
+          "ar": "أدخل بيانات تسجيل الدخول إلى Tigo",
+          "ko": "Tigo 로그인 정보를 입력하세요"
+        }
+      }
+    }
+  ]
+}

@@ -1,3 +1,4 @@
 Verbind je Tigo-omvormer met Homey en krijg gedetailleerd inzicht in je zonne-energieproductie.
 Houd je huidige stroomopbrengst bij, evenals je totale opwekking. Met de Tigo-app voor Homey kun je deze gegevens gebruiken om je energieverbruik te optimaliseren, Flows te maken en de prestaties van je systeem bij te houden — allemaal op één plek.
+Voeg elk zonnepaneel toe als eigen apparaat om het vermogen en de opbrengst van vandaag te zien.
 Een Tigo EI Premium- of Professional-abonnement is vereist.

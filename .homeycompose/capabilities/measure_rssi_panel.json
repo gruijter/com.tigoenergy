@@ -1,0 +1,39 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Signal (RSSI)",
+    "nl": "Signaal (RSSI)",
+    "de": "Signal (RSSI)",
+    "fr": "Signal (RSSI)",
+    "es": "Señal (RSSI)",
+    "it": "Segnale (RSSI)",
+    "da": "Signal (RSSI)",
+    "sv": "Signal (RSSI)",
+    "no": "Signal (RSSI)",
+    "pl": "Sygnał (RSSI)",
+    "ru": "Сигнал (RSSI)",
+    "ar": "الإشارة (RSSI)",
+    "ko": "신호 (RSSI)"
+  },
+  "desc": {
+    "en": "Radio signal of the optimizer as reported by Tigo",
+    "nl": "Radiosignaal van de optimizer zoals Tigo het meldt",
+    "de": "Funksignal des Optimierers laut Tigo",
+    "fr": "Signal radio de l'optimiseur selon Tigo",
+    "es": "Señal de radio del optimizador según Tigo",
+    "it": "Segnale radio dell'ottimizzatore secondo Tigo",
+    "da": "Optimizerens radiosignal ifølge Tigo",
+    "sv": "Optimerarens radiosignal enligt Tigo",
+    "no": "Optimalisatorens radiosignal ifølge Tigo",
+    "pl": "Sygnał radiowy optymalizatora według Tigo",
+    "ru": "Радиосигнал оптимизатора по данным Tigo",
+    "ar": "إشارة الراديو للمحسّن حسب Tigo",
+    "ko": "Tigo가 보고한 옵티마이저 무선 신호"
+  },
+  "decimals": 0,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "uiComponent": "sensor",
+  "icon": "/assets/capabilities/measure_rssi_panel.svg"
+}

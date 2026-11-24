@@ -102,6 +102,11 @@ const docStubs = {
   },
 };
 
+// data/aggregate CSV, example of the API V3 document p. 23 (header=id; the header can change)
+docStubs.aggregateMin = {
+  csv: 'Datetime,1,2,3\n2014/09/23 00:06:23,23,23,23\n2014/09/23 00:06:24,23,23,23\nDatetime,1,2\n2014/09/23 00:06:28,23,23\n',
+};
+
 // error bodies seen live (zzz_docs/README.md)
 const errors = {
   unauthorized: {
@@ -324,6 +329,55 @@ fixtures.makeDevice = ({ capabilities, settings = {} } = {}) => {
     },
   });
   return device;
+};
+
+/** A panel device without Homey, registered with `poller` when given. */
+fixtures.makePanel = ({
+  objectId, systemId = '1', timezone = 'Europe/Amsterdam', poller, string = 'String A',
+} = {}) => {
+  const Device = fixtures.app('drivers/panel/device.js');
+  const manifest = JSON.parse(fs.readFileSync(path.join(APP, 'drivers/panel/driver.compose.json'), 'utf8'));
+  const device = Object.create(Device.prototype);
+  const values = {};
+  const store = { objectId, timezone };
+  const settings = {
+    systemId, username: 'user@example.invalid', password: 'secret', label: `P${objectId}`, string,
+  };
+  Object.assign(device, {
+    values,
+    store,
+    settings,
+    available: true,
+    manifest,
+    homey: { __: (key) => key, app: { panelPoller: poller }, setTimeout: (fn) => fn() },
+    log() {},
+    error() {},
+    getName: () => `P${objectId}`,
+    getSettings: () => ({ ...settings }),
+    getStoreValue: (key) => store[key],
+    setStoreValue: async (key, value) => {
+      store[key] = value;
+    },
+    hasCapability: (cap) => manifest.capabilities.includes(cap),
+    setCapabilityValue: async (cap, value) => {
+      values[cap] = value;
+    },
+    getAvailable: () => device.available,
+    setAvailable: async () => {
+      device.available = true;
+    },
+    setUnavailable: async (reason) => {
+      device.available = false;
+      device.unavailableReason = reason;
+    },
+  });
+  return device;
+};
+
+/** A PanelPoller with the Homey clock stubbed. */
+fixtures.makePoller = () => {
+  const PanelPoller = fixtures.app('lib/panelPoller.js');
+  return new PanelPoller({ homey: { __: (key) => key, clock: { getTimezone: () => 'Europe/Amsterdam' } } });
 };
 
 /** The inverter driver with its manifest, and a fake pairing session. */
