@@ -93,7 +93,7 @@ module.exports = async (t) => {
   t.eq(devices[0].settings.label, String(panels[0].label), 'the panel label is a setting');
   t.ok(devices[0].settings.string, 'and its string');
   t.eq(JSON.stringify(devices[0].capabilities), JSON.stringify(driver.capabilityList(devices[0].store.apiSource)), 'paired with the final capabilities');
-  t.ok(!driver.capabilityList('v3').includes('measure_temperature_panel') && driver.capabilityList('mobile').includes('measure_temperature_panel'), "temperature only on the app's API");
+  t.ok(driver.capabilityList('v3').includes('measure_temperature_panel'), 'temperature on both APIs');
 
   // one poll per system: 2 requests for all panels
   const calls = fixtures.routeHttps({ '/api/v3/data/aggregate': aggregateFor });

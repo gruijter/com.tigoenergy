@@ -22,19 +22,7 @@ along with com.tigoenergy.  If not, see <http://www.gnu.org/licenses/>.
 // onRepair (new login, system must be on the account) and the pair login are the inverter's
 const InverterDriver = require('../inverter/driver');
 
-/** The panels of a systems/layout answer, with their string. */
-function panelsOf(layout) {
-  const panels = [];
-  const system = (layout && layout.system) || {};
-  for (const inverter of system.inverters || []) {
-    for (const mppt of inverter.mppts || []) {
-      for (const string of mppt.strings || []) {
-        for (const panel of string.panels || []) panels.push({ ...panel, string: string.label });
-      }
-    }
-  }
-  return panels;
-}
+const { panelsOf } = require('../../lib/tigoReadings');
 
 module.exports = class PanelDriver extends InverterDriver {
 
@@ -45,10 +33,9 @@ module.exports = class PanelDriver extends InverterDriver {
     this.log('Panel driver has been initialized');
   }
 
-  /** The official API gives no temperature per panel (seen live by M. Stranik's Tigo app). */
-  capabilityList(source) {
-    const caps = [...this.manifest.capabilities];
-    return source === 'mobile' ? caps : caps.filter((cap) => cap !== 'measure_temperature_panel');
+  /** Both APIs: the official one takes the temperature from the app's API (lib/panelPoller.js). */
+  capabilityList() {
+    return [...this.manifest.capabilities];
   }
 
   async onPair(session) {
