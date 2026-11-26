@@ -25,8 +25,9 @@ const capture = require('../../lib/tigoCapture');
 const DeviceMigrator = require('../../lib/DeviceMigrator');
 const { solarTitle } = require('../../lib/solarTitles');
 const { monotonic, raiseListenerCeiling, saveCounters } = require('../../lib/deviceHelpers');
+const PanelPoller = require('../../lib/panelPoller');
 const {
-  clientFor, connect, findSystem, needsPremium,
+  clientFor, connect, findSystem, systemsOf, needsPremium,
 } = require('../../lib/tigoSource');
 const {
   fromSummary, fromHomepage, alertTitles, equipmentFaults, fromSources, systemObjectId,
@@ -59,6 +60,7 @@ const CHECKIN_LOST_AFTER = 2 * 60 * 60 * 1000;
 // The official alerts are counted over a period Tigo does not document.
 const ALERTS_SINCE = 30 * 24 * 60 * 60 * 1000;
 const EVENT_TYPES_TTL = 24 * 60 * 60 * 1000;
+const PANELS_INTERVAL = 5 * 60 * 1000;
 // data/combined refuses more than 14 days; after a failure the month waits this long
 const COMBINED_DAYS = 14;
 const MONTH_RETRY = 30 * 60 * 1000;
@@ -87,6 +89,7 @@ module.exports = class MyDevice extends Homey.Device {
       this.monthRetryAt = 0;
       this.objectId = undefined;
       this.eventTypes = null;
+      this.panels = { checkedAt: 0, cache: {} };
       this.restarting = false;
       this.busy = false;
       const changed = await DeviceMigrator.migrateCapabilities(this, this.driver.capabilityList(this.source));
@@ -222,6 +225,7 @@ module.exports = class MyDevice extends Homey.Device {
       await this.updateStatus().catch((error) => this.error(error));
       if (this.source === 'mobile') await this.handleReading(fromHomepage(answer));
       else await this.handleDeviceData(answer);
+      await this.updatePanelsOnline().catch((error) => this.error('panels online:', error.statusCode || '', error.message));
     } catch (error) {
       this.error(`poll on the ${this.source} API failed:`, error.statusCode || '', error.message);
       // a rate-limit cooldown passes by itself; the last values stay
@@ -338,6 +342,20 @@ module.exports = class MyDevice extends Homey.Device {
       ? alertTitles(await this.api.getAlerts({ id: this.apiSystemId, startAdded: new Date(Date.now() - ALERTS_SINCE).toISOString(), limit: 100 }), count)
       : null;
     await this.setCapability('active_faults', titles);
+  }
+
+  /** Every 5 min; on the app's API the system's time zone comes from its system list. */
+  async updatePanelsOnline(now = Date.now()) {
+    if (!this.hasCapability('panels_online') || now - this.panels.checkedAt < PANELS_INTERVAL) return;
+    this.panels.checkedAt = now;
+    if (this.source === 'mobile' && !this.timeZone) {
+      const found = findSystem(systemsOf(await this.api.getSystems()), { ids: [this.apiSystemId], name: this.settings.systemName });
+      if (found && found.timezone && validZone(found.timezone)) this.timeZone = found.timezone;
+    }
+    const count = await PanelPoller.panelsOnline({
+      api: this.api, source: this.source, id: this.apiSystemId, timeZone: this.timeZone || this.homey.clock.getTimezone(), cache: this.panels.cache,
+    }, now);
+    await this.setCapability('panels_online', count);
   }
 
   /** The app's equipment states that are a warning or error now. */

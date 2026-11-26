@@ -1,0 +1,39 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Panels online",
+    "nl": "Panelen online",
+    "de": "Module online",
+    "fr": "Panneaux en ligne",
+    "es": "Paneles en línea",
+    "it": "Pannelli online",
+    "da": "Paneler online",
+    "sv": "Paneler online",
+    "no": "Paneler online",
+    "pl": "Panele online",
+    "ru": "Панели онлайн",
+    "ar": "الألواح المتصلة",
+    "ko": "온라인 패널"
+  },
+  "desc": {
+    "en": "Number of panels with a recent reading",
+    "nl": "Aantal panelen met een recente meting",
+    "de": "Anzahl der Module mit einem aktuellen Messwert",
+    "fr": "Nombre de panneaux avec une mesure récente",
+    "es": "Número de paneles con una lectura reciente",
+    "it": "Numero di pannelli con una lettura recente",
+    "da": "Antal paneler med en nylig måling",
+    "sv": "Antal paneler med en färsk mätning",
+    "no": "Antall paneler med en fersk måling",
+    "pl": "Liczba paneli z niedawnym odczytem",
+    "ru": "Число панелей с недавними показаниями",
+    "ar": "عدد الألواح التي لها قراءة حديثة",
+    "ko": "최근 측정값이 있는 패널 수"
+  },
+  "decimals": 0,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "uiComponent": "sensor",
+  "icon": "/assets/capabilities/panels_online.svg"
+}
