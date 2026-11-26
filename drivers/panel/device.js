@@ -56,9 +56,12 @@ module.exports = class PanelDevice extends Homey.Device {
     const round = (value, decimals) => (typeof value === 'number' ? Math.round(value * 10 ** decimals) / 10 ** decimals : value);
     const values = {
       measure_watt_panel: reading.powerW,
+      measure_reclaimed_panel: round(reading.reclaimedW, 1),
       meter_kwh_panel_today: round(reading.todayKwh, 3),
       measure_volt_panel: round(reading.voltageV, 1),
+      measure_volt_out_panel: round(reading.outputV, 1),
       measure_amp_panel: round(reading.currentA, 2),
+      measure_pwm_panel: reading.pwm,
       measure_temperature_panel: round(reading.tempC, 1),
       measure_rssi_panel: reading.rssi,
       measure_efficiency_panel: reading.efficiencyPct,

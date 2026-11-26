@@ -32,7 +32,7 @@ module.exports = class PanelDriver extends InverterDriver {
     this.log('Panel driver has been initialized');
   }
 
-  /** Both APIs: the official one takes the temperature from the app's API (lib/panelPoller.js). */
+  /** Both APIs: the official one takes the APP_ONLY values from the app's API (lib/panelPoller.js). */
   capabilityList() {
     return [...this.manifest.capabilities];
   }

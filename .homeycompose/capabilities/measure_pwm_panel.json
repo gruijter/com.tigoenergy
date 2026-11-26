@@ -1,0 +1,39 @@
+{
+  "type": "number",
+  "title": {
+    "en": "PWM",
+    "nl": "PWM",
+    "de": "PWM",
+    "fr": "PWM",
+    "es": "PWM",
+    "it": "PWM",
+    "da": "PWM",
+    "sv": "PWM",
+    "no": "PWM",
+    "pl": "PWM",
+    "ru": "PWM",
+    "ar": "PWM",
+    "ko": "PWM"
+  },
+  "desc": {
+    "en": "PWM value of the optimizer as reported by Tigo",
+    "nl": "PWM-waarde van de optimizer zoals Tigo die meldt",
+    "de": "PWM-Wert des Optimierers laut Tigo",
+    "fr": "Valeur PWM de l'optimiseur selon Tigo",
+    "es": "Valor PWM del optimizador según Tigo",
+    "it": "Valore PWM dell'ottimizzatore secondo Tigo",
+    "da": "Optimizerens PWM-værdi ifølge Tigo",
+    "sv": "Optimerarens PWM-värde enligt Tigo",
+    "no": "Optimalisatorens PWM-verdi ifølge Tigo",
+    "pl": "Wartość PWM optymalizatora według Tigo",
+    "ru": "Значение ШИМ оптимизатора по данным Tigo",
+    "ar": "قيمة PWM للمحسّن حسب Tigo",
+    "ko": "Tigo가 보고한 옵티마이저 PWM 값"
+  },
+  "decimals": 0,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "uiComponent": "sensor",
+  "icon": "/assets/capabilities/measure_pwm_panel.svg"
+}

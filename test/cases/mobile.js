@@ -188,6 +188,9 @@ async function stubs(t) {
     const temp = new URLSearchParams(options.path.split('?')[1]).get('temp');
     if (temp === 'temp') return { status: 403, body: { message: 'Forbidden' } };
     if (temp === 'vin') return { dataset: [{ order: [3, 4], data: [{ t: '10:30', d: [36.5, '-'] }] }] };
+    if (temp === 'vout') return { dataset: [{ order: [3, 4], data: [{ t: '10:30', d: [30.04, '-'] }] }] };
+    if (temp === 'pwm') return { dataset: [{ order: [3, 4], data: [{ t: '10:30', d: [200, '-'] }] }] };
+    if (temp === 'reclaimedPower') return { dataset: [{ order: [3, 4], data: [{ t: '10:30', d: [4.26, '-'] }] }] };
     return fixtures.get('mobilePanelPower');
   };
   calls = fixtures.routeHttps({ 'mobile:/api/v4/system/summary/summary': series });
@@ -207,13 +210,16 @@ async function stubs(t) {
   t.ok(calls.every((call) => call.host === MAPI), "panels poll only the Tigo app's API");
   const summaries = calls.filter((call) => call.path.startsWith('/api/v4/system/summary/summary'));
   t.eq(summaries.filter((call) => call.path.includes('temp=pin')).length, 1, 'one power request per gateway');
-  t.eq(summaries.map((call) => new URLSearchParams(call.path.split('?')[1]).get('temp')).sort().join(), 'iin,pin,rssi,temp,vin', 'and one per other field');
+  t.eq(summaries.map((call) => new URLSearchParams(call.path.split('?')[1]).get('temp')).sort().join(), 'iin,pin,pwm,reclaimedPower,rssi,temp,vin,vout', 'and one per other field');
   t.ok(calls.some((call) => call.path.includes('uid=CCA-1')), 'with the gateway serial');
   t.eq(panels[0].values.measure_watt_panel, 95, 'panel power (W)');
   t.eq(panels[1].values.measure_watt_panel, 110, 'the newest value of each panel');
   t.eq(panels[0].values.meter_kwh_panel_today, 1.2, "today's energy (Wh) in kWh");
   t.eq(panels[0].values.measure_volt_panel, 36.5, 'voltage from vin');
   t.eq(panels[1].values.measure_volt_panel, null, 'a panel without a voltage in the last hour: cleared');
+  t.eq(panels[0].values.measure_volt_out_panel, 30, 'output voltage from vout');
+  t.eq(panels[0].values.measure_pwm_panel, 200, 'PWM from pwm');
+  t.eq(panels[0].values.measure_reclaimed_panel, 4.3, 'reclaimed power from reclaimedPower');
   t.eq(panels[0].values.measure_temperature_panel, undefined, 'a refused field leaves its tile as it is');
   t.eq(panels[0].values.measure_watt_panel, 95, 'and the power still comes');
   await poller.tick(at + 5 * 60 * 1000);

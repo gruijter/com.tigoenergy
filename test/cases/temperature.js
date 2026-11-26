@@ -1,7 +1,7 @@
 'use strict';
 
 /*
-Panels on the official API take their temperature from the app's API, matched by panel label.
+Panels on the official API take temperature, output voltage, PWM and reclaimed power from the app's API, matched by panel label.
 */
 
 const fixtures = require('../fixtures');
@@ -31,7 +31,13 @@ module.exports = async (t) => {
     const ids = (query.get('object_ids') || '').split(',');
     return { status: 200, contentType: 'text/csv', body: `Datetime,${ids.join(',')}\n2026/11/24 10:01:00,${ids.map(() => 10).join(',')}\n` };
   };
-  const temps = { dataset: [{ order: [panels[0].object_id + 1000], data: [{ t: hhmm, d: [31.5] }] }] };
+  const byTemp = {
+    temp: 31.5, vout: 29.5, pwm: 180, reclaimedPower: 3,
+  };
+  const temps = (options) => {
+    const temp = new URLSearchParams(options.path.split('?')[1]).get('temp');
+    return { dataset: [{ order: [panels[0].object_id + 1000], data: [{ t: hhmm, d: [byTemp[temp]] }] }] };
+  };
   let calls = fixtures.routeHttps({
     '/api/v3/data/aggregate': aggregate,
     'mobile:/api/v3/systems/layout': renumber(fixtures.get('layout')),
@@ -47,8 +53,13 @@ module.exports = async (t) => {
   await poller.tick(now);
   t.eq(devices[0].values.measure_temperature_panel, 31.5, "official API: the temperature from the app's API, by label");
   t.eq(devices[1].values.measure_temperature_panel, null, 'a panel without a recent temperature: cleared');
+  t.eq(devices[0].values.measure_volt_out_panel, 29.5, 'the output voltage too');
+  t.eq(devices[0].values.measure_pwm_panel, 180, 'the PWM too');
+  t.eq(devices[0].values.measure_reclaimed_panel, 3, 'the reclaimed power too');
+  t.eq(devices[1].values.measure_reclaimed_panel, null, 'a panel without a recent value: cleared');
   t.eq(devices[0].values.measure_watt_panel, 10, 'the power still from the official API');
-  t.ok(calls.some((call) => call.path.includes('temp=temp')), "one temperature request per gateway on the app's API");
+  const asked = calls.filter((call) => call.path.startsWith('/api/v4/system/summary/summary')).map((call) => new URLSearchParams(call.path.split('?')[1]).get('temp'));
+  t.eq(asked.sort().join(), 'pwm,reclaimedPower,temp,vout', "one request per field per gateway on the app's API");
 
   // the app's API refuses the login: the rest goes on, the temperature tile stays, retried after an hour
   calls = fixtures.routeHttps({ '/api/v3/data/aggregate': aggregate, 'mobile:/api/v3/user/login': fixtures.errors.unauthorized });
