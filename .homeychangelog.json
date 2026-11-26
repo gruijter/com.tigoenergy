@@ -10,5 +10,8 @@
   },
   "2.0.0": {
     "en": "Added a device per solar panel, with power, energy, voltage, current, temperature and an underperforming alarm. Added support for accounts without EI Premium. Added month and year energy, active faults and a connection alarm. Minor other fixes and improvements."
+  },
+  "2.1.0": {
+    "en": "Added output voltage, optimizer setting and reclaimed power to the panels, and the number of panels online to the solar system. Minor other fixes and improvements."
   }
 }
