@@ -77,5 +77,40 @@ module.exports = async (t) => {
   t.eq(logins(), tried, 'not tried again within an hour');
   await refused.tick(now + 61 * 60 * 1000);
   t.eq(logins(), tried + 1, 'tried again after an hour');
+
+  // one field fails: the others come, that tile stays, retried after an hour
+  const failing = (options) => (new URLSearchParams(options.path.split('?')[1]).get('temp') === 'vout'
+    ? { status: 500, body: { message: 'Internal server error' } } : temps(options));
+  calls = fixtures.routeHttps({
+    '/api/v3/data/aggregate': aggregate,
+    'mobile:/api/v3/systems/layout': renumber(fixtures.get('layout')),
+    'mobile:/api/v4/system/summary/summary': failing,
+  });
+  const partial = fixtures.makePoller();
+  const one = fixtures.makePanel({ objectId: panels[0].object_id, poller: partial, timezone: TZ });
+  one.settings.label = `${panels[0].label}`;
+  partial.register(one);
+  await partial.tick(now);
+  t.eq(one.values.measure_temperature_panel, 31.5, 'one field failing: the others come');
+  t.eq(one.values.measure_volt_out_panel, undefined, 'and its tile stays');
+  const voutAsked = () => calls.filter((call) => call.path.includes('temp=vout')).length;
+  const voutTried = voutAsked();
+  await partial.tick(now + 5 * 60 * 1000);
+  t.eq(voutAsked(), voutTried, 'the failing field is not asked again within an hour');
+  t.eq(calls.filter((call) => call.path.includes('temp=pwm')).length, 2, 'the others are');
+
+  // no gateways on the app's API: the tiles stay
+  fixtures.routeHttps({
+    '/api/v3/data/aggregate': aggregate,
+    'mobile:/api/v3/systems/layout': renumber(fixtures.get('layout')),
+    'mobile:/api/v4/equipments': [],
+  });
+  const empty = fixtures.makePoller();
+  const lone = fixtures.makePanel({ objectId: panels[0].object_id, poller: empty, timezone: TZ });
+  lone.settings.label = `${panels[0].label}`;
+  empty.register(lone);
+  await empty.tick(now);
+  t.eq(lone.values.measure_temperature_panel, undefined, 'no gateways: the temperature tile stays');
+  t.eq(lone.values.measure_watt_panel, 10, 'and the power comes');
   return undefined;
 };

@@ -61,6 +61,7 @@ const CHECKIN_LOST_AFTER = 2 * 60 * 60 * 1000;
 const ALERTS_SINCE = 30 * 24 * 60 * 60 * 1000;
 const EVENT_TYPES_TTL = 24 * 60 * 60 * 1000;
 const PANELS_INTERVAL = 5 * 60 * 1000;
+const PANELS_IDLE_INTERVAL = 30 * 60 * 1000;
 // data/combined refuses more than 14 days; after a failure the month waits this long
 const COMBINED_DAYS = 14;
 const MONTH_RETRY = 30 * 60 * 1000;
@@ -225,7 +226,7 @@ module.exports = class MyDevice extends Homey.Device {
       await this.updateStatus().catch((error) => this.error(error));
       if (this.source === 'mobile') await this.handleReading(fromHomepage(answer));
       else await this.handleDeviceData(answer);
-      await this.updatePanelsOnline().catch((error) => this.error('panels online:', error.statusCode || '', error.message));
+      await this.updatePanelsOnline(now).catch((error) => this.error('panels online:', error.statusCode || '', error.message));
     } catch (error) {
       this.error(`poll on the ${this.source} API failed:`, error.statusCode || '', error.message);
       // a rate-limit cooldown passes by itself; the last values stay
@@ -344,11 +345,13 @@ module.exports = class MyDevice extends Homey.Device {
     await this.setCapability('active_faults', titles);
   }
 
-  /** Every 5 min; on the app's API the system's time zone comes from its system list. */
+  /** Every 5 min, idle every 30 min; on the app's API the system's time zone comes once from its system list. */
   async updatePanelsOnline(now = Date.now()) {
-    if (!this.hasCapability('panels_online') || now - this.panels.checkedAt < PANELS_INTERVAL) return;
+    const idle = this.updatedSeenAt && now - this.updatedSeenAt >= IDLE_AFTER;
+    if (!this.hasCapability('panels_online') || now - this.panels.checkedAt < (idle ? PANELS_IDLE_INTERVAL : PANELS_INTERVAL)) return;
     this.panels.checkedAt = now;
-    if (this.source === 'mobile' && !this.timeZone) {
+    if (this.source === 'mobile' && !this.timeZone && !this.panels.zoneChecked) {
+      this.panels.zoneChecked = true;
       const found = findSystem(systemsOf(await this.api.getSystems()), { ids: [this.apiSystemId], name: this.settings.systemName });
       if (found && found.timezone && validZone(found.timezone)) this.timeZone = found.timezone;
     }

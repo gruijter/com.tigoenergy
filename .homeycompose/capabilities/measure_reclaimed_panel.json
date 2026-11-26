@@ -16,19 +16,19 @@
     "ko": "회수된 전력"
   },
   "desc": {
-    "en": "Extra power the optimizer gains for this panel, as estimated by Tigo, in watt (W)",
-    "nl": "Extra vermogen dat de optimizer voor dit paneel wint, volgens Tigo, in watt (W)",
-    "de": "Zusätzliche Leistung, die der Optimierer für dieses Modul gewinnt, laut Tigo, in Watt (W)",
-    "fr": "Puissance supplémentaire gagnée par l'optimiseur pour ce panneau, selon Tigo, en watts (W)",
-    "es": "Potencia extra que el optimizador gana para este panel, según Tigo, en vatios (W)",
-    "it": "Potenza extra che l'ottimizzatore guadagna per questo pannello, secondo Tigo, in watt (W)",
-    "da": "Ekstra effekt, som optimizeren vinder for dette panel, ifølge Tigo, i watt (W)",
-    "sv": "Extra effekt som optimeraren vinner för den här panelen, enligt Tigo, i watt (W)",
-    "no": "Ekstra effekt optimalisatoren vinner for dette panelet, ifølge Tigo, i watt (W)",
-    "pl": "Dodatkowa moc uzyskana przez optymalizator dla tego panelu według Tigo, w watach (W)",
-    "ru": "Дополнительная мощность, полученная оптимизатором для этой панели, по оценке Tigo, в ваттах (Вт)",
-    "ar": "القدرة الإضافية التي يكسبها المحسّن لهذا اللوح حسب Tigo بالواط (W)",
-    "ko": "Tigo 추정 옵티마이저가 이 패널에서 추가로 얻은 전력 (W)"
+    "en": "Extra power the optimizer gains for this panel, according to Tigo",
+    "nl": "Extra vermogen dat de optimizer voor dit paneel wint, volgens Tigo",
+    "de": "Zusätzliche Leistung, die der Optimierer für dieses Modul gewinnt, laut Tigo",
+    "fr": "Puissance supplémentaire gagnée par l'optimiseur pour ce panneau, selon Tigo",
+    "es": "Potencia extra que el optimizador gana para este panel, según Tigo",
+    "it": "Potenza extra che l'ottimizzatore guadagna per questo pannello, secondo Tigo",
+    "da": "Ekstra effekt, som optimizeren vinder for dette panel, ifølge Tigo",
+    "sv": "Extra effekt som optimeraren vinner för den här panelen, enligt Tigo",
+    "no": "Ekstra effekt optimalisatoren vinner for dette panelet, ifølge Tigo",
+    "pl": "Dodatkowa moc uzyskana przez optymalizator dla tego panelu według Tigo",
+    "ru": "Дополнительная мощность, полученная оптимизатором для этой панели, по данным Tigo",
+    "ar": "القدرة الإضافية التي يكسبها المحسّن لهذا اللوح حسب Tigo",
+    "ko": "Tigo 기준 옵티마이저가 이 패널에서 추가로 얻은 전력"
   },
   "units": {
     "en": "W",

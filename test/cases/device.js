@@ -93,6 +93,19 @@ module.exports = async (t) => {
   await online.updatePanelsOnline(now + 5 * 60 * 1000);
   t.eq(calls.filter((call) => call.path.startsWith('/api/v3/systems/layout')).length, 1, 'the layout is asked once');
 
+  // a layout without panels: 0, without an aggregate of all objects
+  calls = fixtures.routeHttps({ '/api/v3/systems/layout': { system: { inverters: [] } } });
+  const bare = fixtures.makeDevice();
+  bare.api = fixtures.makeClient();
+  bare.timeZone = 'Europe/Amsterdam';
+  bare.panels = { checkedAt: 0, cache: {} };
+  await bare.updatePanelsOnline(now);
+  t.eq(bare.values.panels_online, 0, 'no panels in the layout: 0');
+  t.eq(calls.filter((call) => call.path.startsWith('/api/v3/data/aggregate')).length, 0, 'without an aggregate');
+  bare.panels.checkedAt = 0;
+  await bare.updatePanelsOnline(now + 5 * 60 * 1000);
+  t.eq(calls.filter((call) => call.path.startsWith('/api/v3/systems/layout')).length, 2, 'an empty layout is asked again');
+
   const { site } = fixtures;
   fixtures.useSite(null);
   try {
@@ -109,6 +122,23 @@ module.exports = async (t) => {
     mobile.panels.checkedAt = 0;
     await mobile.updatePanelsOnline(new Date('2026-08-28T12:00:00-07:00').getTime());
     t.eq(mobile.values.panels_online, 0, 'none in the last hour: 0');
+
+    // the time zone comes once from the system list
+    calls = fixtures.routeHttps();
+    const zoned = fixtures.makeDevice();
+    zoned.source = 'mobile';
+    zoned.api = new TigoMobileClient({ username: 'u', password: 'p', homey: zoned.homey });
+    zoned.panels = { checkedAt: 0, cache: {} };
+    await zoned.updatePanelsOnline(new Date('2026-08-28T10:40:00-07:00').getTime());
+    t.eq(zoned.timeZone, 'America/Los_Angeles', "app's API: the time zone from the system list");
+    t.eq(zoned.values.panels_online, 2, 'and the window in that zone');
+    const lists = () => calls.filter((call) => call.path.startsWith('/api/v3/systems/query')).length;
+    zoned.timeZone = undefined;
+    zoned.homey.clock = { getTimezone: () => 'America/Los_Angeles' };
+    zoned.panels.checkedAt = 0;
+    const listed = lists();
+    await zoned.updatePanelsOnline(new Date('2026-08-28T10:50:00-07:00').getTime());
+    t.eq(lists(), listed, 'the system list is asked once');
   } finally {
     fixtures.useSite(site);
   }
